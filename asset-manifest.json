@@ -1,19 +1,23 @@
 {
   "files": {
-    "main.css": "/acorn-faery-home/static/css/main.5d86c042.css",
-    "main.js": "/acorn-faery-home/static/js/main.275f1c8f.js",
+    "main.css": "/acorn-faery-home/static/css/main.96193336.css",
+    "main.js": "/acorn-faery-home/static/js/main.fd7272b8.js",
     "static/js/453.d899ef47.chunk.js": "/acorn-faery-home/static/js/453.d899ef47.chunk.js",
+    "static/media/ashen-eidolon.mp3": "/acorn-faery-home/static/media/ashen-eidolon.58f7f0f41afe2123e8df.mp3",
+    "static/media/way-to-the-lost-kingdom.mp3": "/acorn-faery-home/static/media/way-to-the-lost-kingdom.9e8b69e9a1174ee3041c.mp3",
+    "static/media/birth-of-the-toad-king.mp3": "/acorn-faery-home/static/media/birth-of-the-toad-king.ae3a9e37fcda703f9e24.mp3",
+    "static/media/autumn-I.mp3": "/acorn-faery-home/static/media/autumn-I.756f9f015b40b39fe1d6.mp3",
     "static/media/edge-of-town.mp3": "/acorn-faery-home/static/media/edge-of-town.ab4c5278496322879c5a.mp3",
     "static/media/image07.gif": "/acorn-faery-home/static/media/image07.99b6aa5af33f563d9b0e.gif",
     "static/media/container07.png": "/acorn-faery-home/static/media/container07.abf7b516af7a17b78e93.png",
     "static/media/bg.jpg": "/acorn-faery-home/static/media/bg.d472dec868a2b0ff7228.jpg",
     "index.html": "/acorn-faery-home/index.html",
-    "main.5d86c042.css.map": "/acorn-faery-home/static/css/main.5d86c042.css.map",
-    "main.275f1c8f.js.map": "/acorn-faery-home/static/js/main.275f1c8f.js.map",
+    "main.96193336.css.map": "/acorn-faery-home/static/css/main.96193336.css.map",
+    "main.fd7272b8.js.map": "/acorn-faery-home/static/js/main.fd7272b8.js.map",
     "453.d899ef47.chunk.js.map": "/acorn-faery-home/static/js/453.d899ef47.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5d86c042.css",
-    "static/js/main.275f1c8f.js"
+    "static/css/main.96193336.css",
+    "static/js/main.fd7272b8.js"
   ]
 }
