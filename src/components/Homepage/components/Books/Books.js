@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import bgImage from '../../../assets/images/bg.jpg'; 
-import frameImage from '../../../assets/images/container07.png'; 
+import bgImage from '../../../../assets/images/bg.jpg'; 
+import frameImage from '../../../../assets/images/container07.png'; 
 import { dataByMonth } from './data';
 
 const Books = () => {

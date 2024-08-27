@@ -6,19 +6,7 @@ import avatarImage from '../../assets/images/image07.gif';
 import image01 from '../../assets/images/image01.png';
 import image18 from '../../assets/images/image18.png'; 
 import image29 from '../../assets/images/image29.gif'; 
-import track1 from '../../assets/music/edge-of-town.mp3';
-import track2 from '../../assets/music/birth-of-the-toad-king.mp3';
-import track3 from '../../assets/music/autumn-I.mp3';
-import track4 from '../../assets/music/way-to-the-lost-kingdom.mp3';
-import track5 from '../../assets/music/ashen-eidolon.mp3';
-
-const tracks = [
-  { src: track1, name: 'Edge of Town' },
-  { src: track2, name: 'Birth of the Toad King' },
-  { src: track3, name: 'Autumn I' },
-  { src: track4, name: 'Way to the Lost Kingdom' },
-  { src: track5, name: 'Ashen Eidolon' }
-];
+import {tracks} from './components/Tracks/tracks'
 
 const HomePage = () => {
   const audioRef = useRef(null);
@@ -66,16 +54,18 @@ const HomePage = () => {
         backgroundSize: 'cover'
       }}
     >
-      <div className="absolute inset-0 z-0 flex justify-center items-center">
-        <img
-          src={frameImage}
-          alt="Decorative Frame"
-          className="w-11/12 max-w-screen-xl max-h-screen object-contain"
-        />
-      </div>
+<div
+  className="absolute inset-0 z-0 flex justify-center items-center hidden lg:flex"
+>
+  <img
+    src={frameImage}
+    alt="Decorative Frame"
+    className="w-11/12 max-w-screen-xl max-h-screen object-contain"
+/>
+</div>
 
       <div className="absolute flex flex-col items-center justify-center w-4/5 max-w-lg z-10 mt-24">
-        <div className="relative w-full p-4 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white flex items-start">
+        <div className="relative w-full p-4 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white flex items-start flex-wrap sm:flex-nowrap">
           <div className="w-1/3 flex flex-col items-center justify-center">
             <img
               src={image18} 
@@ -134,16 +124,17 @@ const HomePage = () => {
           </div>
 
           <div className="w-1/3 flex flex-col items-center justify-center space-y-4">
-            <Link to="/books" className="bg-yellow-800 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
-              📖
-            </Link>
-            <a href="https://bandcamp.com/hobbitina" className="bg-yellow-800 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
-              ⚔️🔥⚔️
-            </a>
-            <a href="https://open.spotify.com/user/silvanas8" className="bg-yellow-800 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
-              🎶
-            </a>
-          </div>
+  <Link to="/books" className="text-yellow-800 px-4 py-2 rounded-lg hover:text-yellow-700 transition text-2xl">
+    📖
+  </Link>
+  <a href="https://bandcamp.com/hobbitina" className="text-yellow-800 px-4 py-2 rounded-lg hover:text-yellow-700 transition text-1xl">
+    ⚔️🔥⚔️
+  </a>
+  <a href="https://open.spotify.com/user/silvanas8" className="text-yellow-800 px-4 py-2 rounded-lg hover:text-yellow-700 transition text-3xl">
+    🎶
+  </a>
+</div>
+
         </div>
       </div>
 
@@ -173,22 +164,22 @@ const HomePage = () => {
             </p>
           </div>
         )}
-        <div className="flex space-x-4">
+        <div className="flex space-x-2 sm:space-x-4">
           <button
             onClick={previousTrack}
-            className="px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
+            className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
           >
             Previous
           </button>
           <button
             onClick={playPauseMusic}
-            className="px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
+            className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
           >
             {isPlaying ? 'Pause Music' : 'Play Music'}
           </button>
           <button
             onClick={nextTrack}
-            className="px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
+            className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
           >
             Next
           </button>
@@ -196,7 +187,7 @@ const HomePage = () => {
         <img
           src={image29}
           alt="Tiny Gif"
-          className="mt-4 w-8 h-8 object-cover"
+          className="mt-4 w-6 sm:w-8 h-6 sm:h-8 object-cover"
         />
       </div>
 
