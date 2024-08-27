@@ -1,16 +1,18 @@
 {
   "files": {
-    "main.css": "/acorn-faery-home/static/css/main.4bb80b5b.css",
-    "main.js": "/acorn-faery-home/static/js/main.41cca641.js",
+    "main.css": "/acorn-faery-home/static/css/main.2410b805.css",
+    "main.js": "/acorn-faery-home/static/js/main.f9c1f9b8.js",
     "static/js/453.d899ef47.chunk.js": "/acorn-faery-home/static/js/453.d899ef47.chunk.js",
-    "static/media/logo.svg": "/acorn-faery-home/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "static/media/image07.gif": "/acorn-faery-home/static/media/image07.99b6aa5af33f563d9b0e.gif",
+    "static/media/container07.png": "/acorn-faery-home/static/media/container07.abf7b516af7a17b78e93.png",
+    "static/media/bg.jpg": "/acorn-faery-home/static/media/bg.d472dec868a2b0ff7228.jpg",
     "index.html": "/acorn-faery-home/index.html",
-    "main.4bb80b5b.css.map": "/acorn-faery-home/static/css/main.4bb80b5b.css.map",
-    "main.41cca641.js.map": "/acorn-faery-home/static/js/main.41cca641.js.map",
+    "main.2410b805.css.map": "/acorn-faery-home/static/css/main.2410b805.css.map",
+    "main.f9c1f9b8.js.map": "/acorn-faery-home/static/js/main.f9c1f9b8.js.map",
     "453.d899ef47.chunk.js.map": "/acorn-faery-home/static/js/453.d899ef47.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.4bb80b5b.css",
-    "static/js/main.41cca641.js"
+    "static/css/main.2410b805.css",
+    "static/js/main.f9c1f9b8.js"
   ]
 }
