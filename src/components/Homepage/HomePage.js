@@ -104,11 +104,11 @@ const HomePage = () => {
                   <span className="ml-2">Medieval fantasy & history</span>
                 </li>
                 <li className="flex items-center">
-                  <span role="img" aria-label="squirrels">🐿️</span>
-                  <span className="ml-2">Squirrels</span>
+                  <span role="img" aria-label="squirrels">🍄🐿️</span>
+                  <span className="ml-2"> Mushrooms & Squirrels</span>
                 </li>
                 <li className="flex items-center">
-                  <span role="img" aria-label="coffee">☕</span>
+                  <span role="img" aria-label="coffee">☕🫐</span>
                   <span className="ml-2">Hazelnut coffee & berry cake</span>
                 </li>
                 <li className="flex items-center">
