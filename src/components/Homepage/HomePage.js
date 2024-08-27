@@ -3,15 +3,14 @@ import { Link } from 'react-router-dom';
 import bgImage from '../../assets/images/bg.jpg';
 import frameImage from '../../assets/images/container07.png'; 
 import avatarImage from '../../assets/images/image07.gif';
+import image01 from '../../assets/images/image01.png';
+import image18 from '../../assets/images/image18.png'; 
+import image29 from '../../assets/images/image29.gif'; 
 import track1 from '../../assets/music/edge-of-town.mp3';
 import track2 from '../../assets/music/birth-of-the-toad-king.mp3';
 import track3 from '../../assets/music/autumn-I.mp3';
 import track4 from '../../assets/music/way-to-the-lost-kingdom.mp3';
 import track5 from '../../assets/music/ashen-eidolon.mp3';
-
-// Add a custom font import here if needed
-// For example, importing a Google Font
-// import '@fontsource/your-custom-font';
 
 const tracks = [
   { src: track1, name: 'Edge of Town' },
@@ -26,7 +25,6 @@ const HomePage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [trackIndex, setTrackIndex] = useState(0);
 
-  // Effect to handle track changes
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -78,11 +76,21 @@ const HomePage = () => {
 
       <div className="absolute flex flex-col items-center justify-center w-4/5 max-w-lg z-10 mt-24">
         <div className="relative w-full p-4 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white flex items-start">
-          <div className="w-1/3 flex justify-center items-center">
+          <div className="w-1/3 flex flex-col items-center justify-center">
+            <img
+              src={image18} 
+              alt="Another Image"
+              className="mb-2 w-8 h-8 object-cover" 
+            />
             <img
               src={avatarImage}
               alt="Avatar Image"
               className="w-24 h-24 object-cover rounded-full"
+            />
+            <img
+              src={image01}
+              alt="Additional Image"
+              className="mt-2 w-12 h-12 object-cover"
             />
           </div>
 
@@ -116,6 +124,10 @@ const HomePage = () => {
                 <li className="flex items-center">
                   <span role="img" aria-label="music">🎵</span>
                   <span className="ml-2">Dungeon Synth & black Metal</span>
+                </li>
+                <li className="flex items-center">
+                  <span role="img" aria-label="magic">🃏</span>
+                  <span className="ml-2">Magic: The Gathering</span>
                 </li>
               </ul>
             </div>
@@ -181,6 +193,11 @@ const HomePage = () => {
             Next
           </button>
         </div>
+        <img
+          src={image29}
+          alt="Tiny Gif"
+          className="mt-4 w-8 h-8 object-cover"
+        />
       </div>
 
       <audio ref={audioRef} src={tracks[trackIndex].src} loop />
