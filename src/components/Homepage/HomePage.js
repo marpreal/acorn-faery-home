@@ -1,27 +1,69 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import bgImage from '../../assets/images/bg.jpg';
 import frameImage from '../../assets/images/container07.png'; 
 import avatarImage from '../../assets/images/image07.gif';
-import backgroundMusic from '../../assets/music/edge-of-town.mp3';
+import track1 from '../../assets/music/edge-of-town.mp3';
+import track2 from '../../assets/music/birth-of-the-toad-king.mp3';
+import track3 from '../../assets/music/autumn-I.mp3';
+import track4 from '../../assets/music/way-to-the-lost-kingdom.mp3';
+import track5 from '../../assets/music/ashen-eidolon.mp3';
+
+// Add a custom font import here if needed
+// For example, importing a Google Font
+// import '@fontsource/your-custom-font';
+
+const tracks = [
+  { src: track1, name: 'Edge of Town' },
+  { src: track2, name: 'Birth of the Toad King' },
+  { src: track3, name: 'Autumn I' },
+  { src: track4, name: 'Way to the Lost Kingdom' },
+  { src: track5, name: 'Ashen Eidolon' }
+];
 
 const HomePage = () => {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [trackIndex, setTrackIndex] = useState(0);
 
-  const handlePlayMusic = () => {
+  // Effect to handle track changes
+  useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.play();
-      setIsPlaying(true);
+      audioRef.current.pause();
+      audioRef.current.src = tracks[trackIndex].src;
+      audioRef.current.load();
+      
+      if (isPlaying) {
+        audioRef.current.play();
+      }
     }
+  }, [trackIndex, isPlaying]);
+
+  const playPauseMusic = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const nextTrack = () => {
+    setTrackIndex((prevIndex) => (prevIndex + 1) % tracks.length);
+  };
+
+  const previousTrack = () => {
+    setTrackIndex((prevIndex) => (prevIndex - 1 + tracks.length) % tracks.length);
   };
 
   return (
     <div
-      className="bg-cover bg-center min-h-screen flex justify-center items-center"
+      className="bg-cover bg-center min-h-screen flex justify-center items-center relative"
       style={{
         backgroundImage: `url(${bgImage})`,
-        fontFamily: "'Pirata One', cursive", 
+        fontFamily: "'Pirata One', cursive",
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover'
       }}
@@ -80,7 +122,7 @@ const HomePage = () => {
           </div>
 
           <div className="w-1/3 flex flex-col items-center justify-center space-y-4">
-            <Link to="/lectures" className="bg-yellow-800 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
+            <Link to="/books" className="bg-yellow-800 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
               📖
             </Link>
             <a href="https://bandcamp.com/hobbitina" className="bg-yellow-800 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition">
@@ -92,14 +134,56 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-      <button
-        onClick={handlePlayMusic}
-        className="absolute bottom-4 px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
-      >
-        Play Music
-      </button>
 
-      <audio ref={audioRef} src={backgroundMusic} loop />
+      <div className="absolute bottom-8 flex flex-col space-y-4 items-center">
+        {isPlaying && (
+          <div className="mb-4 text-center">
+            <h3
+              className="text-lg font-semibold"
+              style={{
+                fontFamily: "'Luxurious Roman', serif", 
+                color: 'white', 
+                padding: '4px',
+                display: 'inline-block' 
+              }}
+            >
+              Now Playing:
+            </h3>
+            <p
+              style={{
+                fontFamily: "'Luxurious Roman', serif", 
+                color: 'white', 
+                padding: '4px', 
+                display: 'inline-block' 
+              }}
+            >
+              {tracks[trackIndex].name}
+            </p>
+          </div>
+        )}
+        <div className="flex space-x-4">
+          <button
+            onClick={previousTrack}
+            className="px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
+          >
+            Previous
+          </button>
+          <button
+            onClick={playPauseMusic}
+            className="px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
+          >
+            {isPlaying ? 'Pause Music' : 'Play Music'}
+          </button>
+          <button
+            onClick={nextTrack}
+            className="px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      <audio ref={audioRef} src={tracks[trackIndex].src} loop />
     </div>
   );
 };
