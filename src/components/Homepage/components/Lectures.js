@@ -1,55 +1,8 @@
 import React from 'react';
-import bgImage from '../../../assets/images/bg.jpg'; // Background image
-import frameImage from '../../../assets/images/container07.png'; // Frame image
-
-const dataByMonth = {
-  January: {
-    books: [
-      'Flox de los colores',
-      'Adiós, Fairy Oak',
-      'El destino de un hada',
-      'La historia perdida'
-    ]
-  },
-  February: {
-    books: []
-  },
-  March: {
-    
-    books: ['Lores y Damas', 'El estrecho sendero entre deseos']
-  },
-  April: {
-    
-    books: [
-      'To hell and back again. My Burzum Story.',
-      'Dungeon Synth - The Rebirth of the legend.',
-      'Siega',
-      'Por si las voces vuelven',
-      'Gothan, GasLight'
-    ]
-  },
-  May: {
-    books: [
-      'How to Sell a Haunted House',
-      "The Southern Book Club's Guide to Slaying Vampires",
-      'Meditaciones de Marco Aurelio',
-      'Wilt',
-      'Beyond Order'
-    ]
-  },
-  June: {
-    
-    books: ['Drácula']
-  },
-  July: {
-    
-    books: ['The Fellowship of the Ring']
-  },
-  August: {
-    
-    books: ['The Two Towers', 'The Return of the King']
-  }
-};
+import { Link } from 'react-router-dom';
+import bgImage from '../../../assets/images/bg.jpg'; 
+import frameImage from '../../../assets/images/container07.png'; 
+import { dataByMonth } from './data';
 
 const Lectures = () => {
   return (
@@ -91,7 +44,11 @@ const Lectures = () => {
           ))}
         </div>
       </div>
+      <Link to="/" className="absolute bottom-8 right-8 px-5 py-2 bg-green-600 text-white rounded-full border border-green-800 shadow-lg hover:bg-green-500 transition-transform transform hover:scale-105">
+        Back to Homepage
+      </Link>
     </div>
+    
   );
 };
 

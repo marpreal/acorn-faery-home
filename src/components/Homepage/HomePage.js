@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import bgImage from '../../assets/images/bg.jpg';
 import frameImage from '../../assets/images/container07.png'; 
 import avatarImage from '../../assets/images/image07.gif';
+import backgroundMusic from '../../assets/music/edge-of-town.mp3';
 
 const HomePage = () => {
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayMusic = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
   return (
     <div
       className="bg-cover bg-center min-h-screen flex justify-center items-center"
@@ -81,6 +92,14 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+      <button
+        onClick={handlePlayMusic}
+        className="absolute bottom-4 px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
+      >
+        Play Music
+      </button>
+
+      <audio ref={audioRef} src={backgroundMusic} loop />
     </div>
   );
 };
