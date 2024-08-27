@@ -32,10 +32,6 @@ Welcome, wanderer, to the enchanted realm of the HomePage React Component! This 
 
    Your default browser will unveil the HomePage component, bringing its magic to life on your local realm.
 
-## 🖼️ Enchanted Visions
-
-![HomePage](src/assets/images/screenshot.png)
-
 ## 🧩 Spellbinding Technologies
 
 - **🔮 React**: Crafting the magical user interface.
