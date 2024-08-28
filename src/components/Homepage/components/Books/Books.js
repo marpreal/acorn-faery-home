@@ -1,27 +1,24 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import bgImage from '../../../../assets/images/bg.jpg'; 
-import frameImage from '../../../../assets/images/container07.png'; 
-import { dataByYear } from './data'; // Import the data
-import './Books.css';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import bgImage from "../../../../assets/images/bg.jpg";
+import frameImage from "../../../../assets/images/container07.png";
+import { dataByYear } from "./data";
+import AddBookForm from "./components/AddBookForm";
+import "./Books.css";
 
 const Books = () => {
-  const years = Object.keys(dataByYear);
+  const [booksData, setBooksData] = useState(dataByYear);
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
-  // Get the current year
+  const years = Object.keys(booksData);
   const currentYearString = new Date().getFullYear().toString();
-
-  // Find the index of the current year
   const initialYearIndex = years.indexOf(currentYearString);
-
-  // Set the initial state based on the current year
   const [currentYearIndex, setCurrentYearIndex] = useState(
     initialYearIndex !== -1 ? initialYearIndex : 0
   );
 
-  // Get the current year and books for that year
   const currentYear = years[currentYearIndex];
-  const booksForCurrentYear = dataByYear[currentYear];
+  const booksForCurrentYear = booksData[currentYear];
 
   const handleNextYear = () => {
     setCurrentYearIndex((prevIndex) => {
@@ -37,14 +34,29 @@ const Books = () => {
     });
   };
 
+  const handleAddBook = (book) => {
+    setBooksData((prevData) => {
+      const updatedData = { ...prevData };
+      if (!updatedData[book.year]) {
+        updatedData[book.year] = {};
+      }
+      if (!updatedData[book.year][book.month]) {
+        updatedData[book.year][book.month] = [];
+      }
+      updatedData[book.year][book.month].push(book.title);
+      return updatedData;
+    });
+    setIsFormVisible(false); // Hide the form after adding the book
+  };
+
   return (
     <div
       className="bg-cover bg-center min-h-screen flex justify-center items-center relative"
       style={{
         backgroundImage: `url(${bgImage})`,
         fontFamily: "'Playball', cursive",
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover'
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
       }}
     >
       <div className="absolute inset-0 z-0 flex justify-center items-center hidden lg:flex">
@@ -56,9 +68,7 @@ const Books = () => {
       </div>
 
       <div className="relative flex flex-col items-center justify-center w-4/5 max-w-lg z-10 mt-24">
-        <div
-          className="relative w-full h-[35vh] p-4 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white overflow-auto scroll-container"
-        >
+        <div className="relative w-full h-[35vh] p-4 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white overflow-auto scroll-container">
           <div className="flex justify-between items-center mb-6">
             <button
               onClick={handlePreviousYear}
@@ -82,7 +92,9 @@ const Books = () => {
                 <ul className="list-disc pl-5">
                   {booksForCurrentYear[month].length > 0 ? (
                     booksForCurrentYear[month].map((book, index) => (
-                      <li key={index} className="mb-1">{book}</li>
+                      <li key={index} className="mb-1">
+                        {book}
+                      </li>
                     ))
                   ) : (
                     <p>No books available for {month}.</p>
@@ -96,12 +108,26 @@ const Books = () => {
         </div>
       </div>
 
-      <Link 
-        to="/" 
+      <button
+        onClick={() => setIsFormVisible(true)}
+        className="absolute bottom-8 left-8 px-4 py-2 bg-green-600 text-white rounded-full border border-green-800 shadow-lg hover:bg-green-500 transition-transform transform hover:scale-105"
+      >
+        Add New Book
+      </button>
+
+      <Link
+        to="/"
         className="absolute bottom-8 right-8 px-5 py-2 bg-green-600 text-white rounded-full border border-green-800 shadow-lg hover:bg-green-500 transition-transform transform hover:scale-105"
       >
         Back to Homepage
       </Link>
+
+      {isFormVisible && (
+        <AddBookForm
+          onAddBook={handleAddBook}
+          onClose={() => setIsFormVisible(false)}
+        />
+      )}
     </div>
   );
 };
