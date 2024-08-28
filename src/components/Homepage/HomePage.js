@@ -65,7 +65,7 @@ const HomePage = () => {
       </div>
 
       <div className="absolute flex flex-col items-center justify-center w-4/5 max-w-lg z-10 mt-24">
-        <div className="relative w-full p-4 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white flex items-start flex-wrap sm:flex-nowrap mb-12 sm:mb-0">
+        <div className="relative w-full p-4 xs:border-0 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white xs:bg-transparent flex items-start flex-wrap sm:flex-nowrap mb-12 sm:mb-0">
           <div className="w-1/3 flex flex-col items-center justify-center">
             <img
               src={image18}
