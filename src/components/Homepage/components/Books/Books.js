@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import bgImage from '../../../../assets/images/bg.jpg'; 
 import frameImage from '../../../../assets/images/container07.png'; 
 import { dataByMonth } from './data';
+import './Books.css';
 
 const Books = () => {
   return (
@@ -15,7 +16,7 @@ const Books = () => {
         backgroundSize: 'cover'
       }}
     >
-      <div className="absolute inset-0 z-0 flex justify-center items-center">
+      <div className="absolute inset-0 z-0 flex justify-center items-center hidden lg:flex">
         <img
           src={frameImage}
           alt="Decorative Frame"
@@ -24,24 +25,26 @@ const Books = () => {
       </div>
 
       <div className="relative flex flex-col items-center justify-center w-4/5 max-w-lg z-10 mt-24">
-        <div className="relative w-full h-[35vh] p-4 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white overflow-auto">
-          <h1 className="text-2xl font-bold mb-6 text-center">Books of the Year</h1>
-          {Object.keys(dataByMonth).map((month) => (
-            <div key={month} className="mb-4">
-              <h2 className="text-lg font-semibold mb-2">{month}</h2>
-              
-              {dataByMonth[month].length > 0 && (
-                <>
-                  <ul className="list-disc pl-5">
-                    {dataByMonth[month].map((book, index) => (
-                      <li key={index} className="mb-1">{book}</li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
+      <div
+  className="relative w-full h-[35vh] p-4 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white overflow-auto scroll-container"
+>
+  <h1 className="text-2xl font-bold mb-6 text-center">Books of the Year</h1>
+  {Object.keys(dataByMonth).map((month) => (
+    <div key={month} className="mb-4">
+      <h2 className="text-lg font-semibold mb-2">{month}</h2>
+      
+      {dataByMonth[month].length > 0 && (
+        <>
+          <ul className="list-disc pl-5">
+            {dataByMonth[month].map((book, index) => (
+              <li key={index} className="mb-1">{book}</li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  ))}
+</div>
       </div>
 
       <Link 
