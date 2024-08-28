@@ -1,52 +1,107 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import bgImage from "../../../../assets/images/bg.jpg";
 import frameImage from "../../../../assets/images/container07.png";
-import { dataByYear } from "./data";
 import AddBookForm from "./components/AddBookForm";
+import axios from 'axios';
 import "./Books.css";
 
 const Books = () => {
-  const [booksData, setBooksData] = useState(dataByYear);
+  const [booksData, setBooksData] = useState({});
   const [isFormVisible, setIsFormVisible] = useState(false);
+  const [currentYearIndex, setCurrentYearIndex] = useState(0);
+
+  useEffect(() => {
+    const fetchBooksData = async () => {
+      try {
+        const response = await axios.get('https://srv-cr7gdlbv2p9s73a3qv6g.onrender.com/books');
+        const data = {};
+        response.data.forEach(book => {
+          if (!data[book.year]) {
+            data[book.year] = {};
+          }
+          if (!data[book.year][book.month]) {
+            data[book.year][book.month] = [];
+          }
+          data[book.year][book.month].push(book);
+        });
+        setBooksData(data);
+        // Update currentYearIndex to match the current year
+        const currentYear = new Date().getFullYear().toString();
+        const yearIndex = Object.keys(data).indexOf(currentYear);
+        setCurrentYearIndex(yearIndex !== -1 ? yearIndex : 0);
+      } catch (error) {
+        console.error('Error fetching books data:', error);
+      }
+    };
+
+    fetchBooksData();
+  }, []);
 
   const years = Object.keys(booksData);
-  const currentYearString = new Date().getFullYear().toString();
-  const initialYearIndex = years.indexOf(currentYearString);
-  const [currentYearIndex, setCurrentYearIndex] = useState(
-    initialYearIndex !== -1 ? initialYearIndex : 0
-  );
-
-  const currentYear = years[currentYearIndex];
-  const booksForCurrentYear = booksData[currentYear];
+  const currentYear = years[currentYearIndex] || '';
+  const booksForCurrentYear = booksData[currentYear] || {};
 
   const handleNextYear = () => {
-    setCurrentYearIndex((prevIndex) => {
+    setCurrentYearIndex(prevIndex => {
       const nextIndex = prevIndex + 1;
       return nextIndex < years.length ? nextIndex : prevIndex;
     });
   };
 
   const handlePreviousYear = () => {
-    setCurrentYearIndex((prevIndex) => {
+    setCurrentYearIndex(prevIndex => {
       const prevIndexAdjusted = prevIndex - 1;
       return prevIndexAdjusted >= 0 ? prevIndexAdjusted : prevIndex;
     });
   };
 
-  const handleAddBook = (book) => {
-    setBooksData((prevData) => {
-      const updatedData = { ...prevData };
-      if (!updatedData[book.year]) {
-        updatedData[book.year] = {};
-      }
-      if (!updatedData[book.year][book.month]) {
-        updatedData[book.year][book.month] = [];
-      }
-      updatedData[book.year][book.month].push(book.title);
-      return updatedData;
-    });
-    setIsFormVisible(false); // Hide the form after adding the book
+  const handleAddBook = async (book) => {
+    try {
+      const response = await axios.post('http://localhost:5000/books', book);
+      const addedBook = response.data;
+
+      setBooksData(prevData => {
+        const updatedData = { ...prevData };
+        if (!updatedData[addedBook.year]) {
+          updatedData[addedBook.year] = {};
+        }
+        if (!updatedData[addedBook.year][addedBook.month]) {
+          updatedData[addedBook.year][addedBook.month] = [];
+        }
+        updatedData[addedBook.year][addedBook.month].push(addedBook);
+
+        // Update the current year index to reflect the added book
+        const yearsList = Object.keys(updatedData);
+        const currentYearIndex = yearsList.indexOf(addedBook.year);
+        setCurrentYearIndex(currentYearIndex !== -1 ? currentYearIndex : 0);
+
+        return updatedData;
+      });
+
+      setIsFormVisible(false);
+    } catch (error) {
+      console.error('Error adding book:', error);
+    }
+  };
+
+  const handleDeleteBook = async (bookId) => {
+    try {
+      console.log('Attempting to delete book with ID:', bookId);
+      await axios.delete(`http://localhost:5000/books/${bookId}`);
+
+      setBooksData(prevData => {
+        const updatedData = { ...prevData };
+        Object.keys(updatedData).forEach(year => {
+          Object.keys(updatedData[year]).forEach(month => {
+            updatedData[year][month] = updatedData[year][month].filter(book => book._id !== bookId);
+          });
+        });
+        return updatedData;
+      });
+    } catch (error) {
+      console.error('Error deleting book:', error);
+    }
   };
 
   return (
@@ -91,9 +146,15 @@ const Books = () => {
                 <h2 className="text-lg font-semibold mb-2">{month}</h2>
                 <ul className="list-disc pl-5">
                   {booksForCurrentYear[month].length > 0 ? (
-                    booksForCurrentYear[month].map((book, index) => (
-                      <li key={index} className="mb-1">
-                        {book}
+                    booksForCurrentYear[month].map((book) => (
+                      <li key={book._id} className="mb-1 flex justify-between items-center">
+                        {book.title}
+                        <button
+                          onClick={() => handleDeleteBook(book._id)}
+                          className="ml-4 px-2 py-1 bg-red-600 text-white rounded-full hover:bg-red-500 transition-transform transform hover:scale-105"
+                        >
+                          Delete
+                        </button>
                       </li>
                     ))
                   ) : (
