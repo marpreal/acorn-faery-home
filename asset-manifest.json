@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/acorn-faery-home/static/css/main.4e64caf2.css",
-    "main.js": "/acorn-faery-home/static/js/main.58ad6a9a.js",
+    "main.css": "/acorn-faery-home/static/css/main.95d44970.css",
+    "main.js": "/acorn-faery-home/static/js/main.21252bc4.js",
     "static/js/453.d899ef47.chunk.js": "/acorn-faery-home/static/js/453.d899ef47.chunk.js",
     "static/media/ashen-eidolon.mp3": "/acorn-faery-home/static/media/ashen-eidolon.58f7f0f41afe2123e8df.mp3",
     "static/media/way-to-the-lost-kingdom.mp3": "/acorn-faery-home/static/media/way-to-the-lost-kingdom.9e8b69e9a1174ee3041c.mp3",
@@ -13,12 +13,12 @@
     "static/media/bg.jpg": "/acorn-faery-home/static/media/bg.d472dec868a2b0ff7228.jpg",
     "static/media/wood.jpeg": "/acorn-faery-home/static/media/wood.2351c4287cbbe30c9902.jpeg",
     "index.html": "/acorn-faery-home/index.html",
-    "main.4e64caf2.css.map": "/acorn-faery-home/static/css/main.4e64caf2.css.map",
-    "main.58ad6a9a.js.map": "/acorn-faery-home/static/js/main.58ad6a9a.js.map",
+    "main.95d44970.css.map": "/acorn-faery-home/static/css/main.95d44970.css.map",
+    "main.21252bc4.js.map": "/acorn-faery-home/static/js/main.21252bc4.js.map",
     "453.d899ef47.chunk.js.map": "/acorn-faery-home/static/js/453.d899ef47.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.4e64caf2.css",
-    "static/js/main.58ad6a9a.js"
+    "static/css/main.95d44970.css",
+    "static/js/main.21252bc4.js"
   ]
 }
