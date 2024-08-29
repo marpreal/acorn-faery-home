@@ -7,9 +7,8 @@ const validMonths = [
 
 const isValidYear = (year) => /^\d{4}$/.test(year);
 
-const AddBookForm = ({ onAddBook, onClose }) => {
+const AddBookForm = ({ onAddBook, onClose, isMultiple }) => {
   const [books, setBooks] = useState([{ year: '', month: '', title: '' }]);
-  const [isMultiple, setIsMultiple] = useState(false);
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (index, event) => {
@@ -50,21 +49,22 @@ const AddBookForm = ({ onAddBook, onClose }) => {
     const errors = validateBooks(books);
 
     if (Object.keys(errors).length > 0) {
-        setErrors(errors);
-        alert("Please correct the errors in the form.");
-        return;
+      setErrors(errors);
+      alert("Please correct the errors in the form.");
+      return;
     }
 
     if (isMultiple) {
-        onAddBook(books);
+      onAddBook(books);
     } else {
-        onAddBook(books[0]);
+      onAddBook(books[0]);
     }
 
     setBooks([{ year: '', month: '', title: '' }]);
     setErrors({});
     onClose();
-};
+  };
+  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">

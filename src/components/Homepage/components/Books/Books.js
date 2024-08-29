@@ -10,6 +10,8 @@ const Books = () => {
   const [booksData, setBooksData] = useState({});
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [currentYearIndex, setCurrentYearIndex] = useState(0);
+  const [isMultiple, setIsMultiple] = useState(false);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchBooksData = async () => {
@@ -31,6 +33,8 @@ const Books = () => {
         setCurrentYearIndex(yearIndex !== -1 ? yearIndex : 0);
       } catch (error) {
         console.error('Error fetching books data:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -57,35 +61,74 @@ const Books = () => {
 
   const handleAddBook = async (book) => {
     try {
-        const response = await axios.post('https://my-backend-1-y6yu.onrender.com/books', book);
-        const addedBook = response.data;
+      const response = await axios.post('https://my-backend-1-y6yu.onrender.com/books', book);
+      const addedBook = response.data;
 
-        setBooksData(prevData => {
-            const updatedData = { ...prevData };
-            if (!updatedData[addedBook.year]) {
-                updatedData[addedBook.year] = {};
-            }
-            if (!updatedData[addedBook.year][addedBook.month]) {
-                updatedData[addedBook.year][addedBook.month] = [];
-            }
-            // Ensure that book is not already present
-            if (!updatedData[addedBook.year][addedBook.month].some(b => b._id === addedBook._id)) {
-                updatedData[addedBook.year][addedBook.month].push(addedBook);
-            }
+      setBooksData(prevData => {
+        const updatedData = { ...prevData };
+        if (!updatedData[addedBook.year]) {
+          updatedData[addedBook.year] = {};
+        }
+        if (!updatedData[addedBook.year][addedBook.month]) {
+          updatedData[addedBook.year][addedBook.month] = [];
+        }
+        if (!updatedData[addedBook.year][addedBook.month].some(b => b._id === addedBook._id)) {
+          updatedData[addedBook.year][addedBook.month].push(addedBook);
+        }
 
-            const yearsList = Object.keys(updatedData);
-            const currentYearIndex = yearsList.indexOf(addedBook.year);
-            setCurrentYearIndex(currentYearIndex !== -1 ? currentYearIndex : 0);
+        const yearsList = Object.keys(updatedData);
+        const currentYearIndex = yearsList.indexOf(addedBook.year);
+        setCurrentYearIndex(currentYearIndex !== -1 ? currentYearIndex : 0);
 
-            return updatedData;
+        return updatedData;
+      });
+
+      setIsFormVisible(false);
+    } catch (error) {
+      console.error('Error adding book:', error);
+    }
+  };
+
+  const handleAddMultipleBooks = async (books) => {
+    try {
+      const response = await axios.post('https://my-backend-1-y6yu.onrender.com/books/multiple', books);
+      const addedBooks = response.data;
+
+      setBooksData(prevData => {
+        const updatedData = { ...prevData };
+        addedBooks.forEach(addedBook => {
+          if (!updatedData[addedBook.year]) {
+            updatedData[addedBook.year] = {};
+          }
+          if (!updatedData[addedBook.year][addedBook.month]) {
+            updatedData[addedBook.year][addedBook.month] = [];
+          }
+         
+          if (!updatedData[addedBook.year][addedBook.month].some(b => b._id === addedBook._id)) {
+            updatedData[addedBook.year][addedBook.month].push(addedBook);
+          }
         });
 
-        setIsFormVisible(false);
-    } catch (error) {
-        console.error('Error adding book:', error);
-    }
-};
+        const yearsList = Object.keys(updatedData);
+        const currentYearIndex = yearsList.indexOf(addedBooks[0].year);
+        setCurrentYearIndex(currentYearIndex !== -1 ? currentYearIndex : 0);
 
+        return updatedData;
+      });
+
+      setIsFormVisible(false);
+    } catch (error) {
+      console.error('Error adding multiple books:', error);
+    }
+  };
+  
+  const handleFormSubmit = (books) => {
+    if (isMultiple) {
+      handleAddMultipleBooks(books);
+    } else {
+      handleAddBook(books);
+    }
+  };
 
   const handleDeleteBook = async (bookId) => {
     try {
@@ -111,7 +154,6 @@ const Books = () => {
       console.error('Error deleting book:', error);
     }
   };
-  
 
   return (
     <div
@@ -149,7 +191,13 @@ const Books = () => {
             </button>
           </div>
 
-          {Object.keys(booksForCurrentYear).length > 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center h-full">
+              <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
+                <span className="visually-hidden"/>
+              </div>
+            </div>
+          ) : Object.keys(booksForCurrentYear).length > 0 ? (
             Object.keys(booksForCurrentYear).map((month) => (
               <div key={month} className="mb-4">
                 <h2 className="text-lg font-semibold mb-2">{month}</h2>
@@ -194,8 +242,9 @@ const Books = () => {
 
       {isFormVisible && (
         <AddBookForm
-          onAddBook={handleAddBook}
+          onAddBook={handleFormSubmit}
           onClose={() => setIsFormVisible(false)}
+          isMultiple={isMultiple}
         />
       )}
     </div>
