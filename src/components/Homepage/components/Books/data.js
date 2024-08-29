@@ -18,9 +18,15 @@ export const dataByYear = {
       'El destino de un hada',
       'La historia perdida'
     ],
+    February: [
+      'Un mago de Terramar',
+      'Las Tumbas de Atuán'
+    ],
     March: [
       'Lores y Damas',
-      'El estrecho sendero entre deseos'
+      'El estrecho sendero entre deseos',
+      'La costa más lejana',
+      'Tehanu'
     ],
     April: [
       'To hell and back again. My Burzum Story.',
@@ -37,7 +43,9 @@ export const dataByYear = {
       'Beyond Order'
     ],
     June: [
-      'Drácula'
+      'Drácula',
+      'Cuentos de Terramar',
+      'En el otro viento'
     ],
     July: [
       'The Fellowship of the Ring'
