@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import bgImage from "../../../../assets/images/bg.jpg";
 import frameImage from "../../../../assets/images/container07.png";
 import AddBookForm from "./components/AddBookForm";
-import axios from 'axios';
+import axios from "axios";
 import "./Books.css";
 
 const Books = () => {
@@ -11,14 +11,16 @@ const Books = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [currentYearIndex, setCurrentYearIndex] = useState(0);
   const [isMultiple, setIsMultiple] = useState(false);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBooksData = async () => {
       try {
-        const response = await axios.get('https://my-backend-1-y6yu.onrender.com/books');
+        const response = await axios.get(
+          "https://my-backend-1-y6yu.onrender.com/books"
+        );
         const data = {};
-        response.data.forEach(book => {
+        response.data.forEach((book) => {
           if (!data[book.year]) {
             data[book.year] = {};
           }
@@ -32,7 +34,7 @@ const Books = () => {
         const yearIndex = Object.keys(data).indexOf(currentYear);
         setCurrentYearIndex(yearIndex !== -1 ? yearIndex : 0);
       } catch (error) {
-        console.error('Error fetching books data:', error);
+        console.error("Error fetching books data:", error);
       } finally {
         setLoading(false);
       }
@@ -42,18 +44,18 @@ const Books = () => {
   }, []);
 
   const years = Object.keys(booksData);
-  const currentYear = years[currentYearIndex] || '';
+  const currentYear = years[currentYearIndex] || "";
   const booksForCurrentYear = booksData[currentYear] || {};
 
   const handleNextYear = () => {
-    setCurrentYearIndex(prevIndex => {
+    setCurrentYearIndex((prevIndex) => {
       const nextIndex = prevIndex + 1;
       return nextIndex < years.length ? nextIndex : prevIndex;
     });
   };
 
   const handlePreviousYear = () => {
-    setCurrentYearIndex(prevIndex => {
+    setCurrentYearIndex((prevIndex) => {
       const prevIndexAdjusted = prevIndex - 1;
       return prevIndexAdjusted >= 0 ? prevIndexAdjusted : prevIndex;
     });
@@ -61,10 +63,13 @@ const Books = () => {
 
   const handleAddBook = async (book) => {
     try {
-      const response = await axios.post('https://my-backend-1-y6yu.onrender.com/books', book);
+      const response = await axios.post(
+        "https://my-backend-1-y6yu.onrender.com/books",
+        book
+      );
       const addedBook = response.data;
 
-      setBooksData(prevData => {
+      setBooksData((prevData) => {
         const updatedData = { ...prevData };
         if (!updatedData[addedBook.year]) {
           updatedData[addedBook.year] = {};
@@ -72,7 +77,11 @@ const Books = () => {
         if (!updatedData[addedBook.year][addedBook.month]) {
           updatedData[addedBook.year][addedBook.month] = [];
         }
-        if (!updatedData[addedBook.year][addedBook.month].some(b => b._id === addedBook._id)) {
+        if (
+          !updatedData[addedBook.year][addedBook.month].some(
+            (b) => b._id === addedBook._id
+          )
+        ) {
           updatedData[addedBook.year][addedBook.month].push(addedBook);
         }
 
@@ -85,26 +94,33 @@ const Books = () => {
 
       setIsFormVisible(false);
     } catch (error) {
-      console.error('Error adding book:', error);
+      console.error("Error adding book:", error);
     }
   };
 
   const handleAddMultipleBooks = async (books) => {
     try {
-      const response = await axios.post('https://my-backend-1-y6yu.onrender.com/books/multiple', books);
+      const response = await axios.post(
+        "https://my-backend-1-y6yu.onrender.com/books/multiple",
+        books
+      );
       const addedBooks = response.data;
 
-      setBooksData(prevData => {
+      setBooksData((prevData) => {
         const updatedData = { ...prevData };
-        addedBooks.forEach(addedBook => {
+        addedBooks.forEach((addedBook) => {
           if (!updatedData[addedBook.year]) {
             updatedData[addedBook.year] = {};
           }
           if (!updatedData[addedBook.year][addedBook.month]) {
             updatedData[addedBook.year][addedBook.month] = [];
           }
-         
-          if (!updatedData[addedBook.year][addedBook.month].some(b => b._id === addedBook._id)) {
+
+          if (
+            !updatedData[addedBook.year][addedBook.month].some(
+              (b) => b._id === addedBook._id
+            )
+          ) {
             updatedData[addedBook.year][addedBook.month].push(addedBook);
           }
         });
@@ -118,10 +134,10 @@ const Books = () => {
 
       setIsFormVisible(false);
     } catch (error) {
-      console.error('Error adding multiple books:', error);
+      console.error("Error adding multiple books:", error);
     }
   };
-  
+
   const handleFormSubmit = (books) => {
     if (isMultiple) {
       handleAddMultipleBooks(books);
@@ -132,26 +148,30 @@ const Books = () => {
 
   const handleDeleteBook = async (bookId) => {
     try {
-      console.log('Attempting to delete book with ID:', bookId);
-      await axios.delete(`https://my-backend-1-y6yu.onrender.com/books/${bookId}`);
-  
-      setBooksData(prevData => {
+      console.log("Attempting to delete book with ID:", bookId);
+      await axios.delete(
+        `https://my-backend-1-y6yu.onrender.com/books/${bookId}`
+      );
+
+      setBooksData((prevData) => {
         const updatedData = { ...prevData };
-        Object.keys(updatedData).forEach(year => {
-          Object.keys(updatedData[year]).forEach(month => {
-            updatedData[year][month] = updatedData[year][month].filter(book => book._id !== bookId);
+        Object.keys(updatedData).forEach((year) => {
+          Object.keys(updatedData[year]).forEach((month) => {
+            updatedData[year][month] = updatedData[year][month].filter(
+              (book) => book._id !== bookId
+            );
             if (updatedData[year][month].length === 0) {
-              delete updatedData[year][month]; 
+              delete updatedData[year][month];
             }
           });
           if (Object.keys(updatedData[year]).length === 0) {
-            delete updatedData[year]; 
+            delete updatedData[year];
           }
         });
         return updatedData;
       });
     } catch (error) {
-      console.error('Error deleting book:', error);
+      console.error("Error deleting book:", error);
     }
   };
 
@@ -193,8 +213,15 @@ const Books = () => {
 
           {loading ? (
             <div className="flex justify-center items-center h-full">
-              <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
-                <span className="visually-hidden"/>
+              <div
+                className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+                role="status"
+                style={{
+                  border: "4px solid transparent",
+                  borderImage: "linear-gradient(45deg, green, brown) 1",
+                }}
+              >
+                <span className="visually-hidden" />
               </div>
             </div>
           ) : Object.keys(booksForCurrentYear).length > 0 ? (
@@ -204,7 +231,10 @@ const Books = () => {
                 <ul className="list-disc pl-5">
                   {booksForCurrentYear[month].length > 0 ? (
                     booksForCurrentYear[month].map((book) => (
-                      <li key={book._id} className="mb-1 flex justify-between items-center">
+                      <li
+                        key={book._id}
+                        className="mb-1 flex justify-between items-center"
+                      >
                         {book.title}
                         <button
                           onClick={() => handleDeleteBook(book._id)}
