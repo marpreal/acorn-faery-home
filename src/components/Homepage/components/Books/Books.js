@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import bgImage from "../../../../assets/images/bg.jpg";
 import frameImage from "../../../../assets/images/container07.png";
 import AddBookForm from "./components/AddBookForm";
-import { fetchBooksData, handleYearNavigation, handleAddBook, handleAddMultipleBooks, handleEditBook, handleDeleteBook } from "./BooksHandlers";
+import { usePassword } from "../../../Password/PasswordContext";
+import PasswordPrompt from "../../../Password/PasswordPrompt";
 import "./Books.css";
 
 const Books = () => {
@@ -13,15 +15,216 @@ const Books = () => {
   const [isMultiple, setIsMultiple] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editingBook, setEditingBook] = useState(null); 
+  const { isAuthenticated, showPasswordPrompt, isPasswordPromptVisible } = usePassword();
+  console.log('isMultiplebooks', isMultiple)
+const BASE_URL = "https://my-backend-1-y6yu.onrender.com/books";
+
+const transformBooksData = (books) => {
+  if (!Array.isArray(books)) {
+    console.error('Expected an array but got', typeof books);
+    return {};
+  }
+
+  return books.reduce((acc, book) => {
+    if (!acc[book.year]) acc[book.year] = {};
+    if (!acc[book.year][book.month]) acc[book.year][book.month] = [];
+    acc[book.year][book.month].push(book);
+    return acc;
+  }, {});
+};
+
+const findYearIndex = (data, year) => Object.keys(data).indexOf(year) || 0;
+
+const fetchBooksData = async (setBooksData, setCurrentYearIndex, setLoading) => {
+  try {
+    const { data } = await axios.get(BASE_URL);
+    const transformedData = transformBooksData(data);
+    setBooksData(transformedData);
+
+    const currentYear = new Date().getFullYear().toString();
+    setCurrentYearIndex(findYearIndex(transformedData, currentYear));
+  } catch (error) {
+    console.error("Error fetching books data:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleYearNavigation = (years, direction, setCurrentYearIndex) => {
+  setCurrentYearIndex((prevIndex) => {
+    const newIndex = prevIndex + direction;
+    return Math.max(0, Math.min(newIndex, years.length - 1));
+  });
+};
+const handleAddOrUpdateBooks = async (books, setBooksData, setCurrentYearIndex, setIsFormVisible) => {
+  try {
+    const url = isMultiple ? `${BASE_URL}/multiple` : BASE_URL;
+
+    console.log("Sending data to:", url);
+    console.log("Data being sent:", books);
+
+    const { data: addedBooks } = await axios.post(url, books);
+
+    console.log("Received data:", addedBooks);
+
+    setBooksData((prevData) => {
+      const newBooksData = transformBooksData(Array.isArray(addedBooks) ? addedBooks : [addedBooks]);
+      const updatedData = { ...prevData };
+
+      Object.keys(newBooksData).forEach((year) => {
+        if (!updatedData[year]) updatedData[year] = {};
+        Object.keys(newBooksData[year]).forEach((month) => {
+          if (!updatedData[year][month]) updatedData[year][month] = [];
+          const existingBooks = updatedData[year][month].map(b => b._id);
+          const newBooks = newBooksData[year][month].filter(b => !existingBooks.includes(b._id));
+          updatedData[year][month] = [...updatedData[year][month], ...newBooks];
+        });
+      });
+
+      const year = isMultiple ? addedBooks[0].year : addedBooks.year;
+      setCurrentYearIndex(findYearIndex(updatedData, year));
+      return updatedData;
+    });
+
+    setIsFormVisible(false);
+  } catch (error) {
+    console.error("Error adding books:", error.response ? error.response.data : error.message);
+  }
+};
+
+
+
+const handleAddBook = async (book, setBooksData, setCurrentYearIndex, setIsFormVisible) => {
+  await handleAddOrUpdateBooks(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
+};
+
+const handleAddMultipleBooks = async (books, setBooksData, setCurrentYearIndex, setIsFormVisible) => {
+  await handleAddOrUpdateBooks(books, setBooksData, setCurrentYearIndex, setIsFormVisible);
+};
+
+const handleDeleteBook = async (bookId, setBooksData) => {
+  try {
+    await axios.delete(`${BASE_URL}/${bookId}`);
+
+    setBooksData((prevData) => {
+      const updatedData = { ...prevData };
+      Object.keys(updatedData).forEach((year) => {
+        Object.keys(updatedData[year]).forEach((month) => {
+          updatedData[year][month] = updatedData[year][month].filter((book) => book._id !== bookId);
+          if (updatedData[year][month].length === 0) {
+            delete updatedData[year][month];
+          }
+        });
+        if (Object.keys(updatedData[year]).length === 0) {
+          delete updatedData[year];
+        }
+      });
+      return updatedData;
+    });
+  } catch (error) {
+    console.error("Error deleting book:", error);
+  }
+};
+
+const handleEditBook = async (book, setBooksData, setCurrentYearIndex, setIsFormVisible) => {
+  try {
+    const { data: updatedBook } = await axios.put(`${BASE_URL}/${book._id}`, book);
+
+    setBooksData((prevData) => {
+      const newBooksData = transformBooksData([updatedBook]);
+      const updatedData = { ...prevData };
+
+      Object.keys(newBooksData).forEach((year) => {
+        if (!updatedData[year]) updatedData[year] = {};
+        Object.keys(newBooksData[year]).forEach((month) => {
+          if (!updatedData[year][month]) updatedData[year][month] = [];
+          updatedData[year][month] = updatedData[year][month].map(b =>
+            b._id === updatedBook._id ? updatedBook : b
+          );
+        });
+      });
+
+      const year = updatedBook.year;
+      setCurrentYearIndex(findYearIndex(updatedData, year));
+      return updatedData;
+    });
+
+    setIsFormVisible(false);
+  } catch (error) {
+    console.error("Error updating book:", error);
+  }
+};
+
+
 
   const openFormForSingleBook = () => {
-    setIsMultiple(false);
-    setIsFormVisible(true);
+    if (isAuthenticated) {
+      setIsMultiple(false);
+      setIsFormVisible(true);
+    } else {
+      showPasswordPrompt(() => {
+        setIsMultiple(false);
+        setIsFormVisible(true);
+      });
+    }
   };
 
   const openFormForMultipleBooks = () => {
-    setIsMultiple(true);
-    setIsFormVisible(true);
+    if (isAuthenticated) {
+      setIsMultiple(true);
+      setIsFormVisible(true);
+    } else {
+      showPasswordPrompt(() => {
+        setIsMultiple(true);
+        setIsFormVisible(true);
+      });
+    }
+  };
+
+  const handleEdit = (book) => {
+    if (isAuthenticated) {
+      setEditingBook(book);
+      setIsFormVisible(true);
+    } else {
+      showPasswordPrompt(() => {
+        setEditingBook(book);
+        setIsFormVisible(true);
+      });
+    }
+  };
+
+  const handleSubmit = (book) => {
+    if (isAuthenticated) {
+      if (editingBook) {
+        handleEditBook(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
+      } else {
+        if (isMultiple) {
+          handleAddMultipleBooks(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
+        } else {
+          handleAddBook(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
+        }
+      }
+    } else {
+      showPasswordPrompt(() => {
+        if (editingBook) {
+          handleEditBook(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
+        } else {
+          if (isMultiple) {
+            handleAddMultipleBooks([book], setBooksData, setCurrentYearIndex, setIsFormVisible);
+          } else {
+            handleAddBook(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
+          }
+        }
+      });
+    }
+  };
+
+  const handleDelete = (bookId) => {
+    if (isAuthenticated) {
+      handleDeleteBook(bookId, setBooksData);
+    } else {
+      showPasswordPrompt(() => handleDeleteBook(bookId, setBooksData));
+    }
   };
 
   useEffect(() => {
@@ -31,23 +234,6 @@ const Books = () => {
   const years = Object.keys(booksData);
   const currentYear = years[currentYearIndex] || "";
   const booksForCurrentYear = booksData[currentYear] || {};
-
-  const handleEdit = (book) => {
-    setEditingBook(book);
-    setIsFormVisible(true);
-  };
-
-  const handleSubmit = (book) => {
-    if (editingBook) {
-      handleEditBook(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
-    } else {
-      if (isMultiple) {
-        handleAddMultipleBooks([book], setBooksData, setCurrentYearIndex, setIsFormVisible);
-      } else {
-        handleAddBook(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
-      }
-    }
-  };
 
   return (
     <div
@@ -118,7 +304,7 @@ const Books = () => {
                             ✎
                           </button>
                           <button
-                            onClick={() => handleDeleteBook(book._id, setBooksData)}
+                            onClick={() => handleDelete(book._id)}
                             className="p-1 rounded-full hover:bg-red-500 transition-transform transform hover:scale-105"
                           >
                             🗑
@@ -172,6 +358,8 @@ const Books = () => {
           initialBook={editingBook}
         />
       )}
+
+      {isPasswordPromptVisible && <PasswordPrompt />}
     </div>
   );
 };

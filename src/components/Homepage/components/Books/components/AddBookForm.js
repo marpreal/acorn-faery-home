@@ -1,5 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { handleInputChange, handleAddBookField, handleRemoveBookField, validateBooks, handleSubmit } from "./AddBookFormHandlers";
+
+const validMonths = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+const isValidYear = (year) => /^\d{4}$/.test(year);
 
 const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initialBook }) => {
   const [books, setBooks] = useState(initialBook ? [initialBook] : [{ year: "", month: "", title: "" }]);
@@ -16,48 +32,74 @@ const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initia
     }
   }, [initialBook]);
 
-  const handleInputChangeWrapper = (index, event) => {
-    handleInputChange(index, event, books, setBooks);
+  const handleInputChange = (index, event) => {
+    const { name, value } = event.target;
+    const updatedBooks = [...books];
+    updatedBooks[index][name] = value;
+    setBooks(updatedBooks);
   };
 
-  const handleAddBookFieldWrapper = () => {
-    handleAddBookField(books, setBooks);
+  const handleAddBookField = () => {
+    setBooks([...books, { year: "", month: "", title: "" }]);
   };
 
-  const handleRemoveBookFieldWrapper = (index) => {
-    handleRemoveBookField(index, books, setBooks);
+  const handleRemoveBookField = (index) => {
+    const updatedBooks = [...books];
+    updatedBooks.splice(index, 1);
+    setBooks(updatedBooks);
   };
 
-  const handleSubmitWrapper = (event) => {
+  const validateBooks = (books) => {
+    const newErrors = {};
+    books.forEach((book, index) => {
+      if (!book.year || !isValidYear(book.year)) {
+        newErrors[`year-${index}`] = !isValidYear(book.year)
+          ? "Invalid year. Please enter a 4-digit year."
+          : "Year is required.";
+      }
+      if (!book.month || !validMonths.includes(book.month)) {
+        newErrors[`month-${index}`] = !validMonths.includes(book.month)
+          ? "Invalid month. Please enter a valid month name."
+          : "Month is required.";
+      }
+      if (!book.title) {
+        newErrors[`title-${index}`] = "Title is required.";
+      }
+    });
+    return newErrors;
+  };
+
+  const handleSubmit = (event) => {
     event.preventDefault();
-    if (isMultiple && books.length <= 1) {
-      alert("Please add more than one book for multiple book entry.");
-      return;
+    const errors = validateBooks(books);
+    
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+      return; // No need to show alert; errors are already displayed on the form.
     }
-
-    if (initialBook && !isMultiple) {
-      onAddBook(books[0]);
+    
+    if (isMultiple) {
+      onAddBook(books);
     } else {
-      handleSubmit(
-        event,
-        books,
-        validateBooks,
-        onAddBook,
-        isMultiple,
-        setBooks,
-        setErrors,
-        onClose
-      );
+      onAddBook(books[0]);
     }
+    
+    setBooks([{ year: "", month: "", title: "" }]);
+    setErrors({});
+    onClose();
   };
-
+  
+  
+  
+  
+console.log('isMultiple', isMultiple)
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
         <h2 className="text-lg font-semibold mb-4">
           {initialBook ? "Edit Book" : "Add New Books"}
         </h2>
-        <form onSubmit={handleSubmitWrapper}>
+        <form onSubmit={handleSubmit}>
           {books.map((book, index) => (
             <div key={index} className="mb-4">
               <label htmlFor={`year-${index}`} className="block text-sm font-medium text-gray-700">
@@ -68,7 +110,7 @@ const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initia
                 id={`year-${index}`}
                 name="year"
                 value={book.year}
-                onChange={(event) => handleInputChangeWrapper(index, event)}
+                onChange={(event) => handleInputChange(index, event)}
                 className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${errors[`year-${index}`] ? "border-red-500" : ""}`}
               />
               {errors[`year-${index}`] && (
@@ -83,7 +125,7 @@ const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initia
                 id={`month-${index}`}
                 name="month"
                 value={book.month}
-                onChange={(event) => handleInputChangeWrapper(index, event)}
+                onChange={(event) => handleInputChange(index, event)}
                 className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${errors[`month-${index}`] ? "border-red-500" : ""}`}
               />
               {errors[`month-${index}`] && (
@@ -98,7 +140,7 @@ const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initia
                 id={`title-${index}`}
                 name="title"
                 value={book.title}
-                onChange={(event) => handleInputChangeWrapper(index, event)}
+                onChange={(event) => handleInputChange(index, event)}
                 className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${errors[`title-${index}`] ? "border-red-500" : ""}`}
               />
               {errors[`title-${index}`] && (
@@ -108,7 +150,7 @@ const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initia
               {index > 0 && (
                 <button
                   type="button"
-                  onClick={() => handleRemoveBookFieldWrapper(index)}
+                  onClick={() => handleRemoveBookField(index)}
                   className="mt-2 bg-red-500 text-white py-1 px-2 rounded-full"
                 >
                   Remove
@@ -120,7 +162,7 @@ const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initia
           {isMultiple && !initialBook && (
             <button
               type="button"
-              onClick={handleAddBookFieldWrapper}
+              onClick={handleAddBookField}
               className="mb-4 bg-blue-500 text-white py-1 px-2 rounded-full"
             >
               Add Another Book
