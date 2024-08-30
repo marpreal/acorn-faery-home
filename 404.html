@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="refresh" content="0; url=./" />
-    <script>
-      var path = window.location.pathname.split('/');
-      var newPath = '/' + path.slice(2).join('/');
-      window.location.href = './' + newPath;
-    </script>
-  </head>
-  <body></body>
+<head>
+  <meta http-equiv="refresh" content="0; url=/acorn-faery-home/" />
+  <script>
+    var path = window.location.pathname.replace('/acorn-faery-home', '');
+    window.location.replace('/acorn-faery-home' + path);
+  </script>
+</head>
+<body>
+</body>
 </html>
