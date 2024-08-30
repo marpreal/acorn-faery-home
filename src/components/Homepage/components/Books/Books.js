@@ -222,8 +222,11 @@ const Books = () => {
           </div>
 
           {loading ? (
-            <div className="flex justify-center items-center h-full">
+            <div className="flex flex-col justify-center items-center h-full">
               <img src={loadingGif} alt="Loading" className="w-16 h-16" />
+              <p className="mt-2">
+                Loading data (it can take some time, if it's too much, refresh!)
+              </p>
             </div>
           ) : Object.keys(booksForCurrentYear).length > 0 ? (
             Object.keys(booksForCurrentYear).map((month) => (
