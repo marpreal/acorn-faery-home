@@ -34,22 +34,29 @@ const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initia
       alert("Please add more than one book for multiple book entry.");
       return;
     }
-    handleSubmit(
-      event,
-      books,
-      validateBooks,
-      onAddBook,
-      isMultiple,
-      setBooks,
-      setErrors,
-      onClose
-    );
+
+    if (initialBook && !isMultiple) {
+      onAddBook(books[0]);
+    } else {
+      handleSubmit(
+        event,
+        books,
+        validateBooks,
+        onAddBook,
+        isMultiple,
+        setBooks,
+        setErrors,
+        onClose
+      );
+    }
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-        <h2 className="text-lg font-semibold mb-4">Add New Books</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          {initialBook ? "Edit Book" : "Add New Books"}
+        </h2>
         <form onSubmit={handleSubmitWrapper}>
           {books.map((book, index) => (
             <div key={index} className="mb-4">
@@ -110,7 +117,7 @@ const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initia
             </div>
           ))}
 
-          {isMultiple && (
+          {isMultiple && !initialBook && (
             <button
               type="button"
               onClick={handleAddBookFieldWrapper}
@@ -125,7 +132,7 @@ const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initia
               type="submit"
               className="px-4 py-2 bg-yellow-800 text-white rounded-full hover:bg-yellow-700 transition-transform transform hover:scale-105"
             >
-              Add Books
+              {initialBook ? "Update Book" : "Add Books"}
             </button>
             <button
               type="button"

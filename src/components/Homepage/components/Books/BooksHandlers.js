@@ -74,8 +74,6 @@ const handleAddOrUpdateBooks = async (books, setBooksData, setCurrentYearIndex, 
   }
 };
 
-
-
 export const handleAddBook = async (book, setBooksData, setCurrentYearIndex, setIsFormVisible) => {
   await handleAddOrUpdateBooks(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
 };
@@ -105,5 +103,34 @@ export const handleDeleteBook = async (bookId, setBooksData) => {
     });
   } catch (error) {
     console.error("Error deleting book:", error);
+  }
+};
+
+export const handleEditBook = async (book, setBooksData, setCurrentYearIndex, setIsFormVisible) => {
+  try {
+    const { data: updatedBook } = await axios.put(`${BASE_URL}/${book._id}`, book);
+
+    setBooksData((prevData) => {
+      const newBooksData = transformBooksData([updatedBook]);
+      const updatedData = { ...prevData };
+
+      Object.keys(newBooksData).forEach((year) => {
+        if (!updatedData[year]) updatedData[year] = {};
+        Object.keys(newBooksData[year]).forEach((month) => {
+          if (!updatedData[year][month]) updatedData[year][month] = [];
+          updatedData[year][month] = updatedData[year][month].map(b =>
+            b._id === updatedBook._id ? updatedBook : b
+          );
+        });
+      });
+
+      const year = updatedBook.year;
+      setCurrentYearIndex(findYearIndex(updatedData, year));
+      return updatedData;
+    });
+
+    setIsFormVisible(false);
+  } catch (error) {
+    console.error("Error updating book:", error);
   }
 };

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import bgImage from "../../../../assets/images/bg.jpg";
 import frameImage from "../../../../assets/images/container07.png";
 import AddBookForm from "./components/AddBookForm";
-import { fetchBooksData, handleYearNavigation, handleAddBook, handleAddMultipleBooks, handleDeleteBook } from "./BooksHandlers";
+import { fetchBooksData, handleYearNavigation, handleAddBook, handleAddMultipleBooks, handleEditBook, handleDeleteBook } from "./BooksHandlers";
 import "./Books.css";
 
 const Books = () => {
@@ -35,6 +35,18 @@ const Books = () => {
   const handleEdit = (book) => {
     setEditingBook(book);
     setIsFormVisible(true);
+  };
+
+  const handleSubmit = (book) => {
+    if (editingBook) {
+      handleEditBook(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
+    } else {
+      if (isMultiple) {
+        handleAddMultipleBooks([book], setBooksData, setCurrentYearIndex, setIsFormVisible);
+      } else {
+        handleAddBook(book, setBooksData, setCurrentYearIndex, setIsFormVisible);
+      }
+    }
   };
 
   return (
@@ -101,7 +113,7 @@ const Books = () => {
                         <div className="flex items-center ml-4">
                           <button
                             onClick={() => handleEdit(book)}
-                            className="mr-2 p-1 rounded-full hover:bg-blue-500 transition-transform transform hover:scale-105"
+                            className="mr-2 p-1 rounded-full hover:bg-yellow-500 transition-transform transform hover:scale-105"
                           >
                             ✎
                           </button>
@@ -136,7 +148,7 @@ const Books = () => {
 
         <button
           onClick={openFormForMultipleBooks}
-          className="px-4 py-2 bg-blue-600 text-white rounded-full border border-blue-800 shadow-lg hover:bg-blue-500 transition-transform transform hover:scale-105"
+          className="px-4 py-2 bg-yellow-600 text-white rounded-full border border-yellow-800 shadow-lg hover:bg-yellow-500 transition-transform transform hover:scale-105"
         >
           Add Multiple Books
         </button>
@@ -151,21 +163,14 @@ const Books = () => {
 
       {isFormVisible && (
         <AddBookForm
-        onAddBook={(books) => {
-          if (isMultiple) {
-            handleAddMultipleBooks(books, setBooksData, setCurrentYearIndex, setIsFormVisible);
-          } else {
-            handleAddBook(books, setBooksData, setCurrentYearIndex, setIsFormVisible);
-          }
-        }}
-        onClose={() => {
-          setIsFormVisible(false);
-          setEditingBook(null);
-        }}
-        isMultiple={isMultiple}
-        initialBook={editingBook}
-      />
-      
+          onAddBook={handleSubmit}
+          onClose={() => {
+            setIsFormVisible(false);
+            setEditingBook(null);
+          }}
+          isMultiple={isMultiple}
+          initialBook={editingBook}
+        />
       )}
     </div>
   );
