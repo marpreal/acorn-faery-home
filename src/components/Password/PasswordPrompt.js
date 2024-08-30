@@ -3,7 +3,7 @@ import { usePassword } from './PasswordContext';
 
 const PasswordPrompt = () => {
   const [password, setPassword] = useState('');
-  const { authenticate } = usePassword();
+  const { authenticate, hidePasswordPrompt } = usePassword();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -12,7 +12,14 @@ const PasswordPrompt = () => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full relative">
+        <button
+          onClick={hidePasswordPrompt}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+          aria-label="Close"
+        >
+          &times;
+        </button>
         <h2 className="text-lg font-semibold mb-4 text-center">
           Wait... who are you?? 🧐
         </h2>

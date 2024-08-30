@@ -26,12 +26,17 @@ export const PasswordProvider = ({ children }) => {
     setIsPasswordPromptVisible(true);
   };
 
+  const hidePasswordPrompt = () => {
+    setIsPasswordPromptVisible(false);
+  };
+
   return (
     <PasswordContext.Provider
       value={{
         isAuthenticated,
         authenticate,
         showPasswordPrompt,
+        hidePasswordPrompt,
         isPasswordPromptVisible,
       }}
     >
