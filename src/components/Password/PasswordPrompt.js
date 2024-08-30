@@ -13,13 +13,15 @@ const PasswordPrompt = () => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-        <h2 className="text-lg font-semibold mb-4">Enter Password</h2>
+        <h2 className="text-lg font-semibold mb-4 text-center">
+          Wait... who are you?? 🧐
+        </h2>
         <form onSubmit={handleSubmit}>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mb-4 w-full border-gray-300 rounded-md shadow-sm"
+            className="mb-4 w-full border border-gray-300 rounded-md shadow-sm"
             placeholder="Password"
             required
           />

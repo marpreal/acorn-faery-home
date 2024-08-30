@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 const validMonths = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "January", "February", "March", "April", "May", "June", "July",
+  "August", "September", "October", "November", "December"
 ];
 
 const isValidYear = (year) => /^\d{4}$/.test(year);
@@ -22,77 +12,53 @@ const AddBookForm = ({ onAddBook, onClose, isMultiple: initialIsMultiple, initia
   const [errors, setErrors] = useState({});
   const [isMultiple, setIsMultiple] = useState(initialIsMultiple);
 
+  useEffect(() => setIsMultiple(initialIsMultiple), [initialIsMultiple]);
   useEffect(() => {
-    setIsMultiple(initialIsMultiple);
-  }, [initialIsMultiple]);
-
-  useEffect(() => {
-    if (initialBook) {
-      setBooks([initialBook]);
-    }
+    if (initialBook) setBooks([initialBook]);
   }, [initialBook]);
 
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
-    const updatedBooks = [...books];
-    updatedBooks[index][name] = value;
-    setBooks(updatedBooks);
-  };
-
-  const handleAddBookField = () => {
-    setBooks([...books, { year: "", month: "", title: "" }]);
-  };
-
-  const handleRemoveBookField = (index) => {
-    const updatedBooks = [...books];
-    updatedBooks.splice(index, 1);
-    setBooks(updatedBooks);
-  };
-
-  const validateBooks = (books) => {
-    const newErrors = {};
-    books.forEach((book, index) => {
-      if (!book.year || !isValidYear(book.year)) {
-        newErrors[`year-${index}`] = !isValidYear(book.year)
-          ? "Invalid year. Please enter a 4-digit year."
-          : "Year is required.";
-      }
-      if (!book.month || !validMonths.includes(book.month)) {
-        newErrors[`month-${index}`] = !validMonths.includes(book.month)
-          ? "Invalid month. Please enter a valid month name."
-          : "Month is required.";
-      }
-      if (!book.title) {
-        newErrors[`title-${index}`] = "Title is required.";
-      }
+    setBooks(prevBooks => {
+      const updatedBooks = [...prevBooks];
+      updatedBooks[index][name] = value;
+      return updatedBooks;
     });
-    return newErrors;
   };
+
+  const handleFieldChange = (index, field, value) => handleInputChange(index, { target: { name: field, value } });
+
+  const handleAddBookField = () => setBooks(prevBooks => [...prevBooks, { year: "", month: "", title: "" }]);
+  
+  const handleRemoveBookField = (index) => setBooks(prevBooks => prevBooks.filter((_, i) => i !== index));
+
+  const validateBooks = (books) => books.reduce((acc, book, index) => {
+    const errors = {};
+    if (!book.year || !isValidYear(book.year)) {
+      errors[`year-${index}`] = !isValidYear(book.year) ? "Invalid year. Enter a 4-digit year." : "Year is required.";
+    }
+    if (!book.month || !validMonths.includes(book.month)) {
+      errors[`month-${index}`] = !validMonths.includes(book.month) ? "Invalid month. Enter a valid month name." : "Month is required.";
+    }
+    if (!book.title) {
+      errors[`title-${index}`] = "Title is required.";
+    }
+    return { ...acc, ...errors };
+  }, {});
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const errors = validateBooks(books);
-    
-    if (Object.keys(errors).length > 0) {
-      setErrors(errors);
-      return; // No need to show alert; errors are already displayed on the form.
+    const validationErrors = validateBooks(books);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
     }
-    
-    if (isMultiple) {
-      onAddBook(books);
-    } else {
-      onAddBook(books[0]);
-    }
-    
+    onAddBook(isMultiple ? books : books[0]);
     setBooks([{ year: "", month: "", title: "" }]);
     setErrors({});
     onClose();
   };
-  
-  
-  
-  
-console.log('isMultiple', isMultiple)
+
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
@@ -102,51 +68,24 @@ console.log('isMultiple', isMultiple)
         <form onSubmit={handleSubmit}>
           {books.map((book, index) => (
             <div key={index} className="mb-4">
-              <label htmlFor={`year-${index}`} className="block text-sm font-medium text-gray-700">
-                Year
-              </label>
-              <input
-                type="text"
-                id={`year-${index}`}
-                name="year"
-                value={book.year}
-                onChange={(event) => handleInputChange(index, event)}
-                className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${errors[`year-${index}`] ? "border-red-500" : ""}`}
-              />
-              {errors[`year-${index}`] && (
-                <p className="text-red-500 text-sm">{errors[`year-${index}`]}</p>
-              )}
-
-              <label htmlFor={`month-${index}`} className="block text-sm font-medium text-gray-700">
-                Month
-              </label>
-              <input
-                type="text"
-                id={`month-${index}`}
-                name="month"
-                value={book.month}
-                onChange={(event) => handleInputChange(index, event)}
-                className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${errors[`month-${index}`] ? "border-red-500" : ""}`}
-              />
-              {errors[`month-${index}`] && (
-                <p className="text-red-500 text-sm">{errors[`month-${index}`]}</p>
-              )}
-
-              <label htmlFor={`title-${index}`} className="block text-sm font-medium text-gray-700">
-                Book Title
-              </label>
-              <input
-                type="text"
-                id={`title-${index}`}
-                name="title"
-                value={book.title}
-                onChange={(event) => handleInputChange(index, event)}
-                className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${errors[`title-${index}`] ? "border-red-500" : ""}`}
-              />
-              {errors[`title-${index}`] && (
-                <p className="text-red-500 text-sm">{errors[`title-${index}`]}</p>
-              )}
-
+              {["year", "month", "title"].map((field) => (
+                <div key={field}>
+                  <label htmlFor={`${field}-${index}`} className="block text-sm font-medium text-gray-700">
+                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                  </label>
+                  <input
+                    type="text"
+                    id={`${field}-${index}`}
+                    name={field}
+                    value={book[field]}
+                    onChange={(e) => handleFieldChange(index, field, e.target.value)}
+                    className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${errors[`${field}-${index}`] ? "border-red-500" : ""}`}
+                  />
+                  {errors[`${field}-${index}`] && (
+                    <p className="text-red-500 text-sm">{errors[`${field}-${index}`]}</p>
+                  )}
+                </div>
+              ))}
               {index > 0 && (
                 <button
                   type="button"
