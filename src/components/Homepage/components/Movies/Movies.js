@@ -7,7 +7,7 @@ import AddBookForm from "./components/AddBookForm";
 import { usePassword } from "../../../Password/PasswordContext";
 import PasswordPrompt from "../../../Password/PasswordPrompt";
 import loadingGif from "../../../../assets/images/image29.gif";
-import "./Books.css";
+import "./Movies.css";
 
 const BASE_URL = "https://my-backend-1-y6yu.onrender.com/books";
 
@@ -51,7 +51,7 @@ const updateBooksData = (books, isMultiple, prevData, setCurrentYearIndex) => {
   return updatedData;
 };
 
-const Books = () => {
+const Movies = () => {
   const [booksData, setBooksData] = useState({});
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [currentYearIndex, setCurrentYearIndex] = useState(0);
@@ -140,7 +140,7 @@ const Books = () => {
   const handleSubmit = (book) => {
     if (isAuthenticated) {
       handleAction(editingBook ? "update" : isMultiple ? "add" : "add", book);
-      hidePasswordPrompt(); 
+      hidePasswordPrompt(); // Hide password prompt if authentication is successful
     } else {
       showPasswordPrompt(() =>
         handleAction(editingBook ? "update" : isMultiple ? "add" : "add", book)
@@ -276,13 +276,13 @@ const Books = () => {
           onClick={() => openAddForm(false)}
           className="px-4 py-2 bg-green-600 text-white rounded-full border border-green-800 shadow-lg hover:bg-green-500 transition-transform transform hover:scale-105"
         >
-          Add Single Book
+          Add Single Movie
         </button>
         <button
           onClick={() => openAddForm(true)}
           className="px-4 py-2 bg-yellow-600 text-white rounded-full border border-yellow-800 shadow-lg hover:bg-yellow-500 transition-transform transform hover:scale-105"
         >
-          Add Multiple Books
+          Add Multiple Movies
         </button>
       </div>
 
@@ -306,4 +306,4 @@ const Books = () => {
   );
 };
 
-export default Books;
+export default Movies;

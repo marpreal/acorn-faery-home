@@ -67,21 +67,24 @@ const HomePage = () => {
       <div className="absolute flex flex-col items-center justify-center w-4/5 max-w-lg z-10 mt-24">
         <div className="relative w-full p-4 xs:border-0 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white xs:bg-transparent flex items-start flex-wrap sm:flex-nowrap mb-12 sm:mb-0">
           <div className="w-1/3 flex flex-col items-center justify-center">
-            <img
-              src={image18}
-              alt="Another Image"
-              className="mb-2 w-8 h-8 object-cover"
-            />
+            <img src={image18} className="mb-2 w-8 h-8 object-cover" />
             <img
               src={avatarImage}
-              alt="Avatar Image"
               className="w-24 h-24 object-cover rounded-full"
             />
-            <img
-              src={image01}
-              alt="Additional Image"
-              className="mt-2 w-12 h-12 object-cover"
-            />
+            <img src={image01} className="mt-2 w-12 h-12 object-cover" />
+            <a
+              href="https://bandcamp.com/hobbitina"
+              className="text-yellow-800 px-4 py-2 mb-2 sm:mb-0 rounded-lg hover:text-yellow-700 transition text-xl"
+            >
+              ⚔️🔥⚔️
+            </a>
+            <a
+              href="https://open.spotify.com/user/silvanas8"
+              className="text-yellow-800 px-4 py-2 mb-2 sm:mb-0 rounded-lg hover:text-yellow-700 transition text-3xl"
+            >
+              🎶
+            </a>
           </div>
 
           <div className="w-2/3 flex flex-col pl-4">
@@ -146,67 +149,69 @@ const HomePage = () => {
             >
               📖
             </Link>
-            <a
-              href="https://bandcamp.com/hobbitina"
-              className="text-yellow-800 px-4 py-2 mb-2 sm:mb-0 rounded-lg hover:text-yellow-700 transition text-xl"
+            {/* <Link
+              to="/movies"
+              className="text-yellow-800 px-4 py-2  sm:mb-0 rounded-lg hover:text-yellow-700 transition text-2xl"
             >
-              ⚔️🔥⚔️
-            </a>
-            <a
-              href="https://open.spotify.com/user/silvanas8"
-              className="text-yellow-800 px-4 py-2 mb-2 sm:mb-0 rounded-lg hover:text-yellow-700 transition text-3xl"
+              🎬
+            </Link> */}
+            <Link
+              to="/recipes"
+              className="text-yellow-800 px-4 py-2  sm:mb-0 rounded-lg hover:text-yellow-700 transition text-2xl"
             >
-              🎶
-            </a>
+              🍯
+            </Link>
           </div>
         </div>
       </div>
       <div className="absolute sm:bottom-6 top-4 sm:top-auto flex flex-col space-y-4 items-center">
         {isPlaying && (
-          <div className="mb-4 text-center">
-            <h3
-              className="text-lg font-semibold"
-              style={{
-                fontFamily: "'Luxurious Roman', serif",
-                color: "white",
-                padding: "4px",
-                display: "inline-block",
-              }}
-            >
-              Now Playing:
-            </h3>
-            <p
-              style={{
-                fontFamily: "'Luxurious Roman', serif",
-                color: "white",
-                padding: "4px",
-                display: "inline-block",
-              }}
-            >
-              {tracks[trackIndex].name}
-            </p>
-          </div>
+          <>
+            <div className="mb-4 text-center">
+              <h3
+                className="text-lg font-semibold"
+                style={{
+                  fontFamily: "'Luxurious Roman', serif",
+                  color: "white",
+                  padding: "4px",
+                  display: "inline-block",
+                }}
+              >
+                Now Playing:
+              </h3>
+              <p
+                style={{
+                  fontFamily: "'Luxurious Roman', serif",
+                  color: "white",
+                  padding: "4px",
+                  display: "inline-block",
+                }}
+              >
+                {tracks[trackIndex].name}
+              </p>
+            </div>
+            <div className="flex space-x-2 sm:space-x-4">
+              <button
+                onClick={previousTrack}
+                className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
+              >
+                Previous
+              </button>
+              <button
+                onClick={nextTrack}
+                className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
+              >
+                Next
+              </button>
+            </div>
+          </>
         )}
-        <div className="flex space-x-2 sm:space-x-4">
-          <button
-            onClick={previousTrack}
-            className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
-          >
-            Previous
-          </button>
-          <button
-            onClick={playPauseMusic}
-            className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
-          >
-            {isPlaying ? "Pause Music" : "Play Music"}
-          </button>
-          <button
-            onClick={nextTrack}
-            className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
-          >
-            Next
-          </button>
-        </div>
+        <button
+          onClick={playPauseMusic}
+          className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
+        >
+          {isPlaying ? "Pause Music" : "Play Music"}
+        </button>
         <img
           src={image29}
           alt="Tiny Gif"
