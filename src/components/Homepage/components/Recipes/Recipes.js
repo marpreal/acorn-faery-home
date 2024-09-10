@@ -13,6 +13,10 @@ const BASE_URL = "https://my-backend-1-y6yu.onrender.com/recipes";
 
 const Recipes = () => {
   const [recipesData, setRecipesData] = useState([]);
+  const [recipes, setRecipes] = useState([
+    { title: "", ingredients: "", instructions: "", image: null },
+  ]);
+
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editingRecipe, setEditingRecipe] = useState(null);
@@ -38,37 +42,24 @@ const Recipes = () => {
     const url = action === "delete" ? `${BASE_URL}/${data._id}` : BASE_URL;
     const method =
       action === "delete" ? "delete" : action === "update" ? "put" : "post";
-  
+
     try {
-      const formData = new FormData();
-      formData.append("title", data.title);
-      formData.append("ingredients", data.ingredients);
-      formData.append("instructions", data.instructions);
-      if (image) {
-        formData.append("image", image);
-      }
-  
-      const config = {
-        method,
-        url: action === "delete" ? url : editingRecipe ? `${url}/${data._id}` : url,
-        data: action === "delete" ? null : formData,
-        headers: { "Content-Type": "multipart/form-data" },
-      };
-  
-      const response = await axios(config);
-  
+      const response = await axios({ method, url, data });
       if (action === "delete") {
         setRecipesData((prevData) =>
           prevData.filter((recipe) => recipe._id !== data._id)
         );
       } else {
-        setRecipesData((prevData) =>
-          editingRecipe
-            ? prevData.map((recipe) =>
-                recipe._id === response.data._id ? response.data : recipe
-              )
-            : [...prevData, response.data]
-        );
+        setRecipesData((prevData) => {
+          if (action === "add") {
+            return [...prevData, response.data];
+          } else if (action === "update") {
+            return prevData.map((recipe) =>
+              recipe._id === response.data._id ? response.data : recipe
+            );
+          }
+          return prevData;
+        });
       }
       setIsFormVisible(false);
       setEditingRecipe(null);
@@ -79,11 +70,13 @@ const Recipes = () => {
       );
     }
   };
-  
 
   const handleSubmit = async (recipeData) => {
     if (isAuthenticated) {
       await handleAction(editingRecipe ? "update" : "add", recipeData);
+      setRecipes([
+        { title: "", ingredients: "", instructions: "", image: null },
+      ]);
       hidePasswordPrompt();
     } else {
       showPasswordPrompt(() =>
@@ -91,7 +84,6 @@ const Recipes = () => {
       );
     }
   };
-  
 
   const handleDelete = (recipeId) => {
     if (isAuthenticated) {
@@ -105,10 +97,12 @@ const Recipes = () => {
     if (isAuthenticated) {
       setEditingRecipe(null);
       setIsFormVisible(true);
+      setRecipes(recipes);
     } else {
       showPasswordPrompt(() => {
         setEditingRecipe(null);
         setIsFormVisible(true);
+        setRecipes(recipes);
       });
     }
   };
@@ -207,6 +201,8 @@ const Recipes = () => {
           onAddRecipe={handleSubmit}
           onClose={() => setIsFormVisible(false)}
           initialRecipe={editingRecipe}
+          recipes={recipes}
+          setRecipes={setRecipes}
         />
       )}
       {isPasswordPromptVisible && <PasswordPrompt />}

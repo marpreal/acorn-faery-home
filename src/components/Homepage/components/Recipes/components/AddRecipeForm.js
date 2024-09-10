@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import './AddRecipeForm.css'; 
+import React, { useState, useEffect } from "react";
+import "./AddRecipeForm.css";
 
-const AddRecipeForm = ({ onAddRecipe, onClose, isMultiple: initialIsMultiple, initialRecipe }) => {
-  const [recipes, setRecipes] = useState(initialRecipe ? [initialRecipe] : [{ title: "", ingredients: "", instructions: "", image: null }]);
+const AddRecipeForm = ({
+  onAddRecipe,
+  onClose,
+  isMultiple: initialIsMultiple,
+  initialRecipe,
+  recipes,
+  setRecipes,
+}) => {
   const [errors, setErrors] = useState({});
   const [isMultiple, setIsMultiple] = useState(initialIsMultiple);
 
@@ -13,7 +19,7 @@ const AddRecipeForm = ({ onAddRecipe, onClose, isMultiple: initialIsMultiple, in
 
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
-    setRecipes(prevRecipes => {
+    setRecipes((prevRecipes) => {
       const updatedRecipes = [...prevRecipes];
       updatedRecipes[index][name] = value;
       return updatedRecipes;
@@ -22,67 +28,74 @@ const AddRecipeForm = ({ onAddRecipe, onClose, isMultiple: initialIsMultiple, in
 
   const handleFileChange = (index, event) => {
     const file = event.target.files[0];
-    setRecipes(prevRecipes => {
+    setRecipes((prevRecipes) => {
       const updatedRecipes = [...prevRecipes];
       updatedRecipes[index].image = file;
       return updatedRecipes;
     });
   };
 
-  const handleAddRecipeField = () => setRecipes(prevRecipes => [...prevRecipes, { title: "", ingredients: "", instructions: "", image: null }]);
-  
-  const handleRemoveRecipeField = (index) => setRecipes(prevRecipes => prevRecipes.filter((_, i) => i !== index));
+  const handleAddRecipeField = () =>
+    setRecipes((prevRecipes) => [
+      ...prevRecipes,
+      { title: "", ingredients: "", instructions: "", image: null },
+    ]);
 
-  const validateRecipes = (recipes) => recipes.reduce((acc, recipe, index) => {
-    const errors = {};
-    if (!recipe.title) {
-      errors[`title-${index}`] = "Title is required.";
-    }
-    if (!recipe.ingredients) {
-      errors[`ingredients-${index}`] = "Ingredients are required.";
-    }
-    if (!recipe.instructions) {
-      errors[`instructions-${index}`] = "Instructions are required.";
-    }
-    return { ...acc, ...errors };
-  }, {});
+  const handleRemoveRecipeField = (index) =>
+    setRecipes((prevRecipes) => prevRecipes.filter((_, i) => i !== index));
+
+  const validateRecipes = (recipes) =>
+    recipes.reduce((acc, recipe, index) => {
+      const errors = {};
+      if (!recipe.title) {
+        errors[`title-${index}`] = "Title is required.";
+      }
+      if (!recipe.ingredients) {
+        errors[`ingredients-${index}`] = "Ingredients are required.";
+      }
+      if (!recipe.instructions) {
+        errors[`instructions-${index}`] = "Instructions are required.";
+      }
+      return { ...acc, ...errors };
+    }, {});
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     const validationErrors = validateRecipes(recipes);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    const recipeDataArray = recipes.map(recipe => {
-      const formData = new FormData();
-      formData.append('title', recipe.title);
-      formData.append('ingredients', recipe.ingredients);
-      formData.append('instructions', recipe.instructions);
-      if (recipe.image) {
-        formData.append('image', recipe.image);
-      }
-      return formData;
-    });
-    
-
     try {
-      await Promise.all(recipeDataArray.map(formData => onAddRecipe(formData)));
-      setRecipes([{ title: "", ingredients: "", instructions: "", image: null }]);
+      await Promise.all(
+        recipes.map((recipe) => {
+          const formData = new FormData();
+          formData.append("title", recipe.title);
+          formData.append("ingredients", recipe.ingredients);
+          formData.append("instructions", recipe.instructions);
+          if (recipe.image) {
+            formData.append("image", recipe.image);
+          }
+          return onAddRecipe(formData);
+        })
+      );
+      setRecipes([
+        { title: "", ingredients: "", instructions: "", image: null },
+      ]);
       setErrors({});
       onClose();
     } catch (error) {
-      console.error('Error adding recipes:', error);
-      alert('Failed to add recipes. Please try again.');
+      console.error("Error adding recipes:", error);
+      alert("Failed to add recipes. Please try again.");
     }
   };
 
   return (
     <div className="form-overlay">
       <div className="form-container">
-        <h2>{initialRecipe ? 'Edit Recipe' : 'Add New Recipes'}</h2>
+        <h2>{initialRecipe ? "Edit Recipe" : "Add New Recipes"}</h2>
         <form onSubmit={handleSubmit}>
           {recipes.map((recipe, index) => (
             <div key={index} className="mb-4">
@@ -94,10 +107,14 @@ const AddRecipeForm = ({ onAddRecipe, onClose, isMultiple: initialIsMultiple, in
                   name="title"
                   value={recipe.title}
                   onChange={(e) => handleInputChange(index, e)}
-                  className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${errors[`title-${index}`] ? "border-red-500" : ""}`}
+                  className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${
+                    errors[`title-${index}`] ? "border-red-500" : ""
+                  }`}
                 />
                 {errors[`title-${index}`] && (
-                  <p className="text-red-500 text-sm">{errors[`title-${index}`]}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors[`title-${index}`]}
+                  </p>
                 )}
               </div>
 
@@ -108,10 +125,14 @@ const AddRecipeForm = ({ onAddRecipe, onClose, isMultiple: initialIsMultiple, in
                   name="ingredients"
                   value={recipe.ingredients}
                   onChange={(e) => handleInputChange(index, e)}
-                  className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${errors[`ingredients-${index}`] ? "border-red-500" : ""}`}
+                  className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${
+                    errors[`ingredients-${index}`] ? "border-red-500" : ""
+                  }`}
                 />
                 {errors[`ingredients-${index}`] && (
-                  <p className="text-red-500 text-sm">{errors[`ingredients-${index}`]}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors[`ingredients-${index}`]}
+                  </p>
                 )}
               </div>
 
@@ -122,10 +143,14 @@ const AddRecipeForm = ({ onAddRecipe, onClose, isMultiple: initialIsMultiple, in
                   name="instructions"
                   value={recipe.instructions}
                   onChange={(e) => handleInputChange(index, e)}
-                  className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${errors[`instructions-${index}`] ? "border-red-500" : ""}`}
+                  className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${
+                    errors[`instructions-${index}`] ? "border-red-500" : ""
+                  }`}
                 />
                 {errors[`instructions-${index}`] && (
-                  <p className="text-red-500 text-sm">{errors[`instructions-${index}`]}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors[`instructions-${index}`]}
+                  </p>
                 )}
               </div>
 
@@ -137,7 +162,13 @@ const AddRecipeForm = ({ onAddRecipe, onClose, isMultiple: initialIsMultiple, in
                   accept="image/*"
                   onChange={(e) => handleFileChange(index, e)}
                 />
-                {recipe.image && <img src={URL.createObjectURL(recipe.image)} alt="Preview" className="image-preview" />}
+                {recipe.image && (
+                  <img
+                    src={URL.createObjectURL(recipe.image)}
+                    alt="Preview"
+                    className="image-preview"
+                  />
+                )}
               </div>
 
               {index > 0 && (
@@ -163,17 +194,10 @@ const AddRecipeForm = ({ onAddRecipe, onClose, isMultiple: initialIsMultiple, in
           )}
 
           <div className="form-buttons">
-            <button
-              type="submit"
-              className="submit-btn"
-            >
-              {initialRecipe ? 'Update Recipe' : 'Add Recipes'}
+            <button type="submit" className="submit-btn">
+              {initialRecipe ? "Update Recipe" : "Add Recipes"}
             </button>
-            <button
-              type="button"
-              className="cancel-btn"
-              onClick={onClose}
-            >
+            <button type="button" className="cancel-btn" onClick={onClose}>
               Cancel
             </button>
           </div>
