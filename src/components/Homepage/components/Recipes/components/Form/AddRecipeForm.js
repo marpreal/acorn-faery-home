@@ -11,11 +11,28 @@ const AddRecipeForm = ({
 }) => {
   const [errors, setErrors] = useState({});
   const [isMultiple, setIsMultiple] = useState(initialIsMultiple);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   useEffect(() => setIsMultiple(initialIsMultiple), [initialIsMultiple]);
+
   useEffect(() => {
-    if (initialRecipe) setRecipes([initialRecipe]);
+    if (initialRecipe) {
+      setRecipes([initialRecipe]);
+      if (initialRecipe.image && !initialRecipe.image.startsWith("data:")) {
+        setImagePreviews([initialRecipe.image]);
+      } else if (initialRecipe.image) {
+        setImagePreviews([URL.createObjectURL(initialRecipe.image)]);
+      }
+    } else {
+      setImagePreviews([]);
+    }
   }, [initialRecipe]);
+
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
+    };
+  }, [imagePreviews]);
 
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
@@ -33,6 +50,15 @@ const AddRecipeForm = ({
       updatedRecipes[index].image = file;
       return updatedRecipes;
     });
+
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreviews((prevPreviews) => {
+        const updatedPreviews = [...prevPreviews];
+        updatedPreviews[index] = previewUrl;
+        return updatedPreviews;
+      });
+    }
   };
 
   const handleAddRecipeField = () =>
@@ -85,6 +111,7 @@ const AddRecipeForm = ({
         { title: "", ingredients: "", instructions: "", image: null },
       ]);
       setErrors({});
+      setImagePreviews([]);
       onClose();
     } catch (error) {
       console.error("Error adding recipes:", error);
@@ -162,9 +189,9 @@ const AddRecipeForm = ({
                   accept="image/*"
                   onChange={(e) => handleFileChange(index, e)}
                 />
-                {recipe.image && (
+                {imagePreviews[index] && (
                   <img
-                    src={URL.createObjectURL(recipe.image)}
+                    src={imagePreviews[index]}
                     alt="Preview"
                     className="image-preview"
                   />

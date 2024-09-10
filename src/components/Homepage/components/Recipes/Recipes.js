@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import bgImage from "../../../../assets/images/bg.jpg";
 import frameImage from "../../../../assets/images/container07.png";
-import AddRecipeForm from "./components/AddRecipeForm";
+import AddRecipeForm from "./components/Form/AddRecipeForm";
 import { usePassword } from "../../../Password/PasswordContext";
 import PasswordPrompt from "../../../Password/PasswordPrompt";
 import loadingGif from "../../../../assets/images/image29.gif";
@@ -38,13 +38,36 @@ const Recipes = () => {
     }
   };
 
+  const handleSubmit = async (recipeData) => {
+    if (isAuthenticated) {
+      await handleAction(editingRecipe ? "update" : "add", recipeData);
+      setRecipes([
+        { title: "", ingredients: "", instructions: "", image: null },
+      ]);
+      hidePasswordPrompt();
+    } else {
+      showPasswordPrompt(() =>
+        handleAction(editingRecipe ? "update" : "add", recipeData)
+      );
+    }
+  };
+
   const handleAction = async (action, data, image) => {
-    const url = action === "delete" ? `${BASE_URL}/${data._id}` : BASE_URL;
+    const url =
+      action === "delete"
+        ? `${BASE_URL}/${data._id}`
+        : action === "update"
+        ? `${BASE_URL}/${editingRecipe._id}`
+        : BASE_URL;
     const method =
       action === "delete" ? "delete" : action === "update" ? "put" : "post";
-
     try {
-      const response = await axios({ method, url, data });
+      const response = await axios({
+        method,
+        url,
+        data,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       if (action === "delete") {
         setRecipesData((prevData) =>
           prevData.filter((recipe) => recipe._id !== data._id)
@@ -70,21 +93,6 @@ const Recipes = () => {
       );
     }
   };
-
-  const handleSubmit = async (recipeData) => {
-    if (isAuthenticated) {
-      await handleAction(editingRecipe ? "update" : "add", recipeData);
-      setRecipes([
-        { title: "", ingredients: "", instructions: "", image: null },
-      ]);
-      hidePasswordPrompt();
-    } else {
-      showPasswordPrompt(() =>
-        handleAction(editingRecipe ? "update" : "add", recipeData)
-      );
-    }
-  };
-
   const handleDelete = (recipeId) => {
     if (isAuthenticated) {
       handleAction("delete", { _id: recipeId });
@@ -145,16 +153,12 @@ const Recipes = () => {
           ) : recipesData.length > 0 ? (
             recipesData.map((recipe) => (
               <div key={recipe._id} className="mb-4">
-                <h2 className="text-lg font-semibold mb-2">{recipe.title}</h2>
-                <p>{recipe.ingredients}</p>
-                <p>{recipe.instructions}</p>
-                {recipe.image && (
-                  <img
-                    src={recipe.image}
-                    alt={recipe.title}
-                    className="w-32 h-32 object-cover mt-2"
-                  />
-                )}
+                <Link
+                  to={`/recipes/${recipe._id}`}
+                  className="text-lg font-semibold mb-2"
+                >
+                  {recipe.title}
+                </Link>
                 <div className="flex items-center mt-4">
                   <button
                     onClick={() => {

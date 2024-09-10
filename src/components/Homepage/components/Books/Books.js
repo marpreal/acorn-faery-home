@@ -89,7 +89,7 @@ const Books = () => {
         : `${BASE_URL}/${data._id}`;
     const method =
       action === "delete" ? "delete" : action === "update" ? "put" : "post";
-
+console.log('data', data)
     try {
       const response = await axios({ method, url, data });
       if (action === "delete") {
