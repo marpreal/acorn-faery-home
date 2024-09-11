@@ -6,19 +6,25 @@ import Movies from './components/Homepage/components/Movies/Movies';
 import Recipes from './components/Homepage/components/Recipes/Recipes';
 import RecipeDetail from './components/Homepage/components/Recipes/components/Details/RecipeDetail';
 import { PasswordProvider } from './components/Password/PasswordContext';
+import { AudioPlayerProvider } from './components/AudioPlayer/AudioPlayerContext';
+import Layout from './components/Layout/Layout';
 
 const App = () => {
   return (
     <PasswordProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/books" element={<Books />} />
-          <Route path="/movies" element={<Movies />} />
-          <Route path="/recipes" element={<Recipes />} />
-          <Route path="/recipes/:id" element={<RecipeDetail />} />
-        </Routes>
-      </Router>
+      <AudioPlayerProvider>
+        <Router>
+          <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/books" element={<Books />} />
+            <Route path="/movies" element={<Movies />} />
+            <Route path="/recipes" element={<Recipes />} />
+            <Route path="/recipes/:id" element={<RecipeDetail />} />
+            </Route>
+          </Routes>
+        </Router>
+      </AudioPlayerProvider>
     </PasswordProvider>
   );
 };

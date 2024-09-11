@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef} from "react";
 import { Link } from "react-router-dom";
 import bgImage from "../../assets/images/bg.jpg";
 import frameImage from "../../assets/images/container07.png";
@@ -6,45 +6,14 @@ import avatarImage from "../../assets/images/image07.gif";
 import image01 from "../../assets/images/image01.png";
 import image18 from "../../assets/images/image18.png";
 import image29 from "../../assets/images/image29.gif";
-import { tracks } from "./components/Tracks/tracks";
+import { tracks } from "../AudioPlayer/Tracks/tracks";
+import { useAudioPlayer } from "../AudioPlayer/AudioPlayerContext";
 
 const HomePage = () => {
   const audioRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [trackIndex, setTrackIndex] = useState(0);
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = tracks[trackIndex].src;
-      audioRef.current.load();
-
-      if (isPlaying) {
-        audioRef.current.play();
-      }
-    }
-  }, [trackIndex, isPlaying]);
-
-  const playPauseMusic = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const nextTrack = () => {
-    setTrackIndex((prevIndex) => (prevIndex + 1) % tracks.length);
-  };
-
-  const previousTrack = () => {
-    setTrackIndex(
-      (prevIndex) => (prevIndex - 1 + tracks.length) % tracks.length
-    );
-  };
+  const { isPlaying, playPauseMusic, nextTrack, previousTrack, trackIndex } =
+    useAudioPlayer();
 
   return (
     <div
@@ -164,62 +133,6 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-      <div className="absolute sm:bottom-6 top-4 sm:top-auto flex flex-col space-y-4 items-center">
-        {isPlaying && (
-          <>
-            <div className="mb-4 text-center">
-              <h3
-                className="text-lg font-semibold"
-                style={{
-                  fontFamily: "'Luxurious Roman', serif",
-                  color: "white",
-                  padding: "4px",
-                  display: "inline-block",
-                }}
-              >
-                Now Playing:
-              </h3>
-              <p
-                style={{
-                  fontFamily: "'Luxurious Roman', serif",
-                  color: "white",
-                  padding: "4px",
-                  display: "inline-block",
-                }}
-              >
-                {tracks[trackIndex].name}
-              </p>
-            </div>
-            <div className="flex space-x-2 sm:space-x-4">
-              <button
-                onClick={previousTrack}
-                className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
-              >
-                Previous
-              </button>
-              <button
-                onClick={nextTrack}
-                className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
-              >
-                Next
-              </button>
-            </div>
-          </>
-        )}
-        <button
-          onClick={playPauseMusic}
-          className="px-3 sm:px-4 py-2 bg-yellow-800 text-white rounded-lg hover:bg-yellow-700 transition"
-        >
-          {isPlaying ? "Pause Music" : "Play Music"}
-        </button>
-        <img
-          src={image29}
-          alt="Tiny Gif"
-          className="mt-4 w-6 sm:w-8 h-6 sm:h-8 object-cover"
-        />
-      </div>
-
-      <audio ref={audioRef} src={tracks[trackIndex].src} loop />
     </div>
   );
 };
