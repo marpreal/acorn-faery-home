@@ -55,15 +55,15 @@ const RecipeDetail = () => {
         backgroundSize: "cover",
       }}
     >
-      <div className="relative flex flex-col items-center justify-center w-full bg-white max-w-md z-10 mt-12 p-4 rounded-lg shadow-lg border border-yellow-800 bg-opacity-50 h-[80vh] overflow-auto">
+<div className="relative flex flex-col items-center justify-center w-full bg-white max-w-md z-10 mt-12 p-4 rounded-lg shadow-lg border border-yellow-800 bg-opacity-50 min-h-[80vh] overflow-auto">
         <h1 className="text-3xl font-bold mb-4">{recipe.title}</h1>
         <div className="mb-4">
           <h2 className="text-2xl font-semibold mb-2">Ingredients</h2>
-          <p>{recipe.ingredients}</p>
+          <p className="whitespace-pre-line">{recipe.ingredients.join('\n')}</p>
         </div>
         <div className="mb-4">
           <h2 className="text-2xl font-semibold mb-2">Instructions</h2>
-          <p>{recipe.instructions}</p>
+          <p className="whitespace-pre-line">{recipe.instructions.join('\n')}</p>
         </div>
         {recipe.image && (
           <div className="w-full flex justify-center mt-4">
@@ -84,7 +84,7 @@ const RecipeDetail = () => {
         </div>
       </div>
     </div>
-  );
+  );  
 };
 
 export default RecipeDetail;

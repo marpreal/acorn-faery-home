@@ -17,7 +17,11 @@ const AddRecipeForm = ({
 
   useEffect(() => {
     if (initialRecipe) {
-      setRecipes([initialRecipe]);
+      setRecipes([{
+        ...initialRecipe,
+        ingredients: Array.isArray(initialRecipe.ingredients) ? initialRecipe.ingredients : [],
+        instructions: Array.isArray(initialRecipe.instructions) ? initialRecipe.instructions : []
+      }]);
       if (initialRecipe.image && !initialRecipe.image.startsWith("data:")) {
         setImagePreviews([initialRecipe.image]);
       } else if (initialRecipe.image) {
@@ -27,7 +31,7 @@ const AddRecipeForm = ({
       setImagePreviews([]);
     }
   }, [initialRecipe]);
-
+  
   useEffect(() => {
     return () => {
       imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
@@ -38,11 +42,17 @@ const AddRecipeForm = ({
     const { name, value } = event.target;
     setRecipes((prevRecipes) => {
       const updatedRecipes = [...prevRecipes];
-      updatedRecipes[index][name] = value;
+      if (name === "ingredients" || name === "instructions") {
+        updatedRecipes[index][name] = Array.isArray(updatedRecipes[index][name]) 
+          ? value.split('\n').map(item => item.trim()) 
+          : [];
+      } else {
+        updatedRecipes[index][name] = value;
+      }
       return updatedRecipes;
     });
   };
-
+  
   const handleFileChange = (index, event) => {
     const file = event.target.files[0];
     setRecipes((prevRecipes) => {
@@ -64,7 +74,7 @@ const AddRecipeForm = ({
   const handleAddRecipeField = () =>
     setRecipes((prevRecipes) => [
       ...prevRecipes,
-      { title: "", ingredients: "", instructions: "", image: null },
+      { title: "", ingredients: [], instructions: [], image: null },
     ]);
 
   const handleRemoveRecipeField = (index) =>
@@ -76,10 +86,10 @@ const AddRecipeForm = ({
       if (!recipe.title) {
         errors[`title-${index}`] = "Title is required.";
       }
-      if (!recipe.ingredients) {
+      if (!recipe.ingredients || !Array.isArray(recipe.ingredients)) {
         errors[`ingredients-${index}`] = "Ingredients are required.";
       }
-      if (!recipe.instructions) {
+      if (!recipe.instructions || !Array.isArray(recipe.instructions)) {
         errors[`instructions-${index}`] = "Instructions are required.";
       }
       return { ...acc, ...errors };
@@ -99,17 +109,15 @@ const AddRecipeForm = ({
         recipes.map((recipe) => {
           const formData = new FormData();
           formData.append("title", recipe.title);
-          formData.append("ingredients", recipe.ingredients);
-          formData.append("instructions", recipe.instructions);
+          formData.append("ingredients", Array.isArray(recipe.ingredients) ? recipe.ingredients.join('\n') : ''); 
+          formData.append("instructions", Array.isArray(recipe.instructions) ? recipe.instructions.join('\n') : ''); 
           if (recipe.image) {
             formData.append("image", recipe.image);
           }
           return onAddRecipe(formData);
         })
       );
-      setRecipes([
-        { title: "", ingredients: "", instructions: "", image: null },
-      ]);
+      setRecipes([{ title: "", ingredients: [], instructions: [], image: null }]);
       setErrors({});
       setImagePreviews([]);
       onClose();
@@ -150,7 +158,7 @@ const AddRecipeForm = ({
                 <textarea
                   id={`ingredients-${index}`}
                   name="ingredients"
-                  value={recipe.ingredients}
+                  value={Array.isArray(recipe.ingredients) ? recipe.ingredients.join("\n") : ''} 
                   onChange={(e) => handleInputChange(index, e)}
                   className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${
                     errors[`ingredients-${index}`] ? "border-red-500" : ""
@@ -168,7 +176,7 @@ const AddRecipeForm = ({
                 <textarea
                   id={`instructions-${index}`}
                   name="instructions"
-                  value={recipe.instructions}
+                  value={Array.isArray(recipe.instructions) ? recipe.instructions.join("\n") : ''}
                   onChange={(e) => handleInputChange(index, e)}
                   className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${
                     errors[`instructions-${index}`] ? "border-red-500" : ""
