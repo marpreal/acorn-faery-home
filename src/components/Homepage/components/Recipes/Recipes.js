@@ -52,7 +52,7 @@ const Recipes = () => {
     }
   };
 
-  const handleAction = async (action, data, image) => {
+  const handleAction = async (action, data) => {
     const url =
       action === "delete"
         ? `${BASE_URL}/${data._id}`
@@ -93,6 +93,7 @@ const Recipes = () => {
       );
     }
   };
+
   const handleDelete = (recipeId) => {
     if (isAuthenticated) {
       handleAction("delete", { _id: recipeId });
@@ -105,12 +106,10 @@ const Recipes = () => {
     if (isAuthenticated) {
       setEditingRecipe(null);
       setIsFormVisible(true);
-      setRecipes(recipes);
     } else {
       showPasswordPrompt(() => {
         setEditingRecipe(null);
         setIsFormVisible(true);
-        setRecipes(recipes);
       });
     }
   };
@@ -118,6 +117,16 @@ const Recipes = () => {
   useEffect(() => {
     fetchRecipesData();
   }, []);
+
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const filteredRecipes = selectedCategory
+    ? recipesData.filter((recipe) => recipe.category === selectedCategory)
+    : recipesData;
 
   return (
     <div
@@ -133,25 +142,38 @@ const Recipes = () => {
         <img
           src={frameImage}
           alt="Decorative Frame"
-          className="w-11/12 max-w-screen-xl max-h-screen object-contain"
+          className="w-full max-w-screen-xl max-h-screen object-contain"
         />
       </div>
 
       <div className="relative flex flex-col items-center justify-center w-4/5 max-w-lg z-10 mt-24">
         <div className="relative w-full h-[35vh] p-4 xs:border-0 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white xs:bg-transparent overflow-auto scroll-container">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-center items-center mb-6 relative">
             <h1 className="text-2xl font-bold text-center">Recipes</h1>
+            <select
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              className="p-2 rounded-lg shadow-md ml-8"
+              style={{ backgroundColor: "#8A9A5B", marginLeft: '180px' }}
+            >
+              <option value="">All Categories</option>
+              <option value="desserts">Desserts</option>
+              <option value="snacks">Snacks</option>
+              <option value="main">Main</option>
+              <option value="side">Side</option>
+              <option value="drinks">Drinks</option>
+            </select>
           </div>
 
           {loading ? (
-            <div className="flex flex-col justify-center items-center h-full">
+            <div className="flex flex-col justify-center items-center">
               <img src={loadingGif} alt="Loading" className="w-16 h-16" />
               <p className="mt-2">
                 Loading data (IT CAN BE A WHOLE MINUTE, I'M SORRY....)
               </p>
             </div>
-          ) : recipesData.length > 0 ? (
-            recipesData.map((recipe) => (
+          ) : filteredRecipes.length > 0 ? (
+            filteredRecipes.map((recipe) => (
               <div key={recipe._id} className="mb-4">
                 <Link
                   to={`/recipes/${recipe._id}`}

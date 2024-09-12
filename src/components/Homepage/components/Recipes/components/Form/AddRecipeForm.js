@@ -4,24 +4,35 @@ import "./AddRecipeForm.css";
 const AddRecipeForm = ({
   onAddRecipe,
   onClose,
-  isMultiple: initialIsMultiple,
   initialRecipe,
   recipes,
   setRecipes,
 }) => {
   const [errors, setErrors] = useState({});
-  const [isMultiple, setIsMultiple] = useState(initialIsMultiple);
   const [imagePreviews, setImagePreviews] = useState([]);
-
-  useEffect(() => setIsMultiple(initialIsMultiple), [initialIsMultiple]);
+  const [recipe, setRecipe] = useState(
+    initialRecipe || {
+      title: "",
+      ingredients: "",
+      instructions: "",
+      image: null,
+      category: "",
+    }
+  );
 
   useEffect(() => {
     if (initialRecipe) {
-      setRecipes([{
-        ...initialRecipe,
-        ingredients: Array.isArray(initialRecipe.ingredients) ? initialRecipe.ingredients : [],
-        instructions: Array.isArray(initialRecipe.instructions) ? initialRecipe.instructions : []
-      }]);
+      setRecipes([
+        {
+          ...initialRecipe,
+          ingredients: Array.isArray(initialRecipe.ingredients)
+            ? initialRecipe.ingredients
+            : [],
+          instructions: Array.isArray(initialRecipe.instructions)
+            ? initialRecipe.instructions
+            : [],
+        },
+      ]);
       if (initialRecipe.image && !initialRecipe.image.startsWith("data:")) {
         setImagePreviews([initialRecipe.image]);
       } else if (initialRecipe.image) {
@@ -31,7 +42,7 @@ const AddRecipeForm = ({
       setImagePreviews([]);
     }
   }, [initialRecipe]);
-  
+
   useEffect(() => {
     return () => {
       imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
@@ -43,8 +54,8 @@ const AddRecipeForm = ({
     setRecipes((prevRecipes) => {
       const updatedRecipes = [...prevRecipes];
       if (name === "ingredients" || name === "instructions") {
-        updatedRecipes[index][name] = Array.isArray(updatedRecipes[index][name]) 
-          ? value.split('\n').map(item => item.trim()) 
+        updatedRecipes[index][name] = Array.isArray(updatedRecipes[index][name])
+          ? value.split("\n").map((item) => item.trim())
           : [];
       } else {
         updatedRecipes[index][name] = value;
@@ -52,7 +63,7 @@ const AddRecipeForm = ({
       return updatedRecipes;
     });
   };
-  
+
   const handleFileChange = (index, event) => {
     const file = event.target.files[0];
     setRecipes((prevRecipes) => {
@@ -109,15 +120,34 @@ const AddRecipeForm = ({
         recipes.map((recipe) => {
           const formData = new FormData();
           formData.append("title", recipe.title);
-          formData.append("ingredients", Array.isArray(recipe.ingredients) ? recipe.ingredients.join('\n') : ''); 
-          formData.append("instructions", Array.isArray(recipe.instructions) ? recipe.instructions.join('\n') : ''); 
+          formData.append(
+            "ingredients",
+            Array.isArray(recipe.ingredients)
+              ? recipe.ingredients.join("\n")
+              : ""
+          );
+          formData.append(
+            "instructions",
+            Array.isArray(recipe.instructions)
+              ? recipe.instructions.join("\n")
+              : ""
+          );
+          formData.append("category", recipe.category); // Add this line
           if (recipe.image) {
             formData.append("image", recipe.image);
           }
           return onAddRecipe(formData);
         })
       );
-      setRecipes([{ title: "", ingredients: [], instructions: [], image: null }]);
+      setRecipes([
+        {
+          title: "",
+          ingredients: [],
+          instructions: [],
+          image: null,
+          category: "",
+        },
+      ]);
       setErrors({});
       setImagePreviews([]);
       onClose();
@@ -125,6 +155,14 @@ const AddRecipeForm = ({
       console.error("Error adding recipes:", error);
       alert("Failed to add recipes. Please try again.");
     }
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setRecipe((prevRecipe) => ({
+      ...prevRecipe,
+      [name]: value,
+    }));
   };
 
   return (
@@ -158,7 +196,11 @@ const AddRecipeForm = ({
                 <textarea
                   id={`ingredients-${index}`}
                   name="ingredients"
-                  value={Array.isArray(recipe.ingredients) ? recipe.ingredients.join("\n") : ''} 
+                  value={
+                    Array.isArray(recipe.ingredients)
+                      ? recipe.ingredients.join("\n")
+                      : ""
+                  }
                   onChange={(e) => handleInputChange(index, e)}
                   className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${
                     errors[`ingredients-${index}`] ? "border-red-500" : ""
@@ -176,7 +218,11 @@ const AddRecipeForm = ({
                 <textarea
                   id={`instructions-${index}`}
                   name="instructions"
-                  value={Array.isArray(recipe.instructions) ? recipe.instructions.join("\n") : ''}
+                  value={
+                    Array.isArray(recipe.instructions)
+                      ? recipe.instructions.join("\n")
+                      : ""
+                  }
                   onChange={(e) => handleInputChange(index, e)}
                   className={`mt-1 block w-full border-gray-300 rounded-md shadow-sm ${
                     errors[`instructions-${index}`] ? "border-red-500" : ""
@@ -215,18 +261,20 @@ const AddRecipeForm = ({
                   Remove
                 </button>
               )}
+              <select
+                name="category"
+                value={recipe.category}
+                onChange={(e) => handleInputChange(index, e)}
+              >
+                <option value="">Select Category</option>
+                <option value="desserts">Desserts</option>
+                <option value="snacks">Snacks</option>
+                <option value="main">Main</option>
+                <option value="side">Side</option>
+                <option value="drinks">Drinks</option>
+              </select>
             </div>
           ))}
-
-          {isMultiple && !initialRecipe && (
-            <button
-              type="button"
-              onClick={handleAddRecipeField}
-              className="mb-4 bg-blue-500 text-white py-1 px-2 rounded-full"
-            >
-              Add Another Recipe
-            </button>
-          )}
 
           <div className="form-buttons">
             <button type="submit" className="submit-btn">
