@@ -206,7 +206,6 @@ const Books = () => {
       </div>
       <div className="relative flex flex-col items-center justify-center w-4/5 max-w-lg z-10 mt-24">
         <div className="relative w-full h-[35vh] p-4 xs:border-0 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white xs:bg-transparent overflow-auto scroll-container">
-        {/* <div className="sticky top-0 w-full  p-4 z-20"> */}
           <div className="flex justify-center items-center mb-6 relative">
             {hasPreviousYear && (
               <button
@@ -230,7 +229,7 @@ const Books = () => {
           {loading ? (
             <div className="flex flex-col justify-center items-center h-full">
               <img src={loadingGif} alt="Loading" className="w-16 h-16" />
-              <p className="mt-2">Loading data...</p>
+              <p className="mt-2">Loading data... It can be a WHOLE MINUTE I'm so sorry...</p>
             </div>
           ) : sortedMonths.length > 0 ? (
             sortedMonths.map((month) => (
