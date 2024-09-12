@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-
-const validMonths = [
-  "January", "February", "March", "April", "May", "June", "July",
-  "August", "September", "October", "November", "December"
-];
+import { validMonths } from "../constants";
 
 const isValidYear = (year) => /^\d{4}$/.test(year);
 

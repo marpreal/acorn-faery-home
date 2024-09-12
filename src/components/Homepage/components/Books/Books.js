@@ -8,6 +8,7 @@ import { usePassword } from "../../../Password/PasswordContext";
 import PasswordPrompt from "../../../Password/PasswordPrompt";
 import loadingGif from "../../../../assets/images/image29.gif";
 import "./Books.css";
+import { validMonths } from "./constants";
 
 const BASE_URL = "https://my-backend-1-y6yu.onrender.com/books";
 
@@ -64,7 +65,11 @@ const Books = () => {
     isPasswordPromptVisible,
     hidePasswordPrompt,
   } = usePassword();
-
+  const sortMonths = (months) => {
+    return months.sort(
+      (a, b) => validMonths.indexOf(a) - validMonths.indexOf(b)
+    );
+  };
   const fetchBooksData = async () => {
     try {
       const { data } = await axios.get(BASE_URL);
@@ -89,7 +94,7 @@ const Books = () => {
         : `${BASE_URL}/${data._id}`;
     const method =
       action === "delete" ? "delete" : action === "update" ? "put" : "post";
-console.log('data', data)
+
     try {
       const response = await axios({ method, url, data });
       if (action === "delete") {
@@ -140,7 +145,7 @@ console.log('data', data)
   const handleSubmit = (book) => {
     if (isAuthenticated) {
       handleAction(editingBook ? "update" : isMultiple ? "add" : "add", book);
-      hidePasswordPrompt(); 
+      hidePasswordPrompt();
     } else {
       showPasswordPrompt(() =>
         handleAction(editingBook ? "update" : isMultiple ? "add" : "add", book)
@@ -177,6 +182,7 @@ console.log('data', data)
   const years = Object.keys(booksData);
   const currentYear = years[currentYearIndex] || "";
   const booksForCurrentYear = booksData[currentYear] || {};
+  const sortedMonths = sortMonths(Object.keys(booksForCurrentYear));
 
   const hasPreviousYear = years[currentYearIndex - 1] !== undefined;
   const hasNextYear = years[currentYearIndex + 1] !== undefined;
@@ -198,14 +204,14 @@ console.log('data', data)
           className="w-11/12 max-w-screen-xl max-h-screen object-contain"
         />
       </div>
-
       <div className="relative flex flex-col items-center justify-center w-4/5 max-w-lg z-10 mt-24">
         <div className="relative w-full h-[35vh] p-4 xs:border-0 border-4 border-yellow-800 rounded-lg bg-opacity-30 bg-white xs:bg-transparent overflow-auto scroll-container">
-          <div className="flex justify-between items-center mb-6">
+        {/* <div className="sticky top-0 w-full  p-4 z-20"> */}
+          <div className="flex justify-center items-center mb-6 relative">
             {hasPreviousYear && (
               <button
                 onClick={() => handleYearNavigation(-1)}
-                className="px-4 py-2 bg-yellow-800 text-white rounded-full hover:bg-yellow-700 transition-transform transform hover:scale-105"
+                className="absolute left-0 px-4 py-2 bg-yellow-800 text-white rounded-full hover:bg-yellow-700 transition-transform transform hover:scale-105"
               >
                 &lt; Prev
               </button>
@@ -214,22 +220,20 @@ console.log('data', data)
             {hasNextYear && (
               <button
                 onClick={() => handleYearNavigation(1)}
-                className="px-4 py-2 bg-yellow-800 text-white rounded-full hover:bg-yellow-700 transition-transform transform hover:scale-105"
+                className="absolute right-0 px-4 py-2 bg-yellow-800 text-white rounded-full hover:bg-yellow-700 transition-transform transform hover:scale-105"
               >
                 Next &gt;
               </button>
             )}
           </div>
-
+          {/* </div> */}
           {loading ? (
             <div className="flex flex-col justify-center items-center h-full">
               <img src={loadingGif} alt="Loading" className="w-16 h-16" />
-              <p className="mt-2">
-                Loading data (IT CAN BE A WHOLE MINUTE, I'M SORRY....)
-              </p>
+              <p className="mt-2">Loading data...</p>
             </div>
-          ) : Object.keys(booksForCurrentYear).length > 0 ? (
-            Object.keys(booksForCurrentYear).map((month) => (
+          ) : sortedMonths.length > 0 ? (
+            sortedMonths.map((month) => (
               <div key={month} className="mb-4">
                 <h2 className="text-lg font-semibold mb-2">{month}</h2>
                 <ul className="list-disc pl-5">
